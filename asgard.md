@@ -6,6 +6,19 @@
 
 ---
 
+## Source pinned in this repo
+
+Live worker source for the four core CF Workers is committed under :
+- [`sources/asgard.js`](sources/asgard.js) — dashboard worker (currently v7.9.2)
+- [`sources/asgard-tools.js`](sources/asgard-tools.js) — agent loop + admin endpoints
+- [`sources/asgard-brain.js`](sources/asgard-brain.js) — D1 service for the products table + cloud-sync
+- [`sources/asgard-vault.js`](sources/asgard-vault.js) — secret store
+
+Re-pin after each significant deploy by running the live  against the CF API and committing the extracted body. The CF response is multipart/form-data — strip the boundary headers + trailing  to get the JS body.
+
+---
+
+
 ## Live infrastructure
 
 ### Asgard dashboard — `asgard.pgallivan.workers.dev`
