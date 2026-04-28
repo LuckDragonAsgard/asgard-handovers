@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="red" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#ff2828"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f5c542"/>
+      <stop offset="100%" stop-color="#ffe27a"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a2540"/>
+      <stop offset="100%" stop-color="#040d1a"/>
+    </linearGradient>
+    <pattern id="ripples2" patternUnits="userSpaceOnUse" width="60" height="30">
+      <path d="M0 22 Q 15 12, 30 22 T 60 22" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="1080" height="1350" fill="url(#bg)"/>
+  <polygon points="0,0 700,0 0,700" fill="url(#red)" opacity="0.92"/>
+  <polygon points="0,720 270,0 0,0" fill="#ffffff" opacity="0.10"/>
+  <rect x="0" y="1100" width="1080" height="250" fill="url(#water)"/>
+  <rect x="0" y="1100" width="1080" height="250" fill="url(#ripples2)"/>
+  <g transform="translate(540, 1200)">
+    <path d="M -260 28 Q -220 70 -180 75 L 180 75 Q 220 70 260 28 Z" fill="#0a0a0a" stroke="#cc0000" stroke-width="3"/>
+    <path d="M -100 50 L 100 50 L 90 75 L -110 75 Z" fill="url(#red)"/>
+    <rect x="-150" y="-50" width="300" height="78" rx="8" fill="#1a1a1a" stroke="#cc0000" stroke-width="2.5"/>
+    <g fill="#ffe27a">
+      <rect x="-135" y="-38" width="34" height="28" rx="3"/>
+      <rect x="-90" y="-38" width="34" height="28" rx="3"/>
+      <rect x="-45" y="-38" width="34" height="28" rx="3"/>
+      <rect x="0" y="-38" width="34" height="28" rx="3"/>
+      <rect x="45" y="-38" width="34" height="28" rx="3"/>
+      <rect x="90" y="-38" width="34" height="28" rx="3"/>
+    </g>
+    <rect x="-120" y="-75" width="240" height="25" rx="3" fill="#0a0a0a" stroke="#cc0000" stroke-width="1.5"/>
+    <rect x="-22" y="-125" width="3" height="50" fill="#cc0000"/>
+    <polygon points="-19,-125 30,-115 -19,-105" fill="url(#red)"/>
+  </g>
+  <g transform="translate(540, 130)" text-anchor="middle">
+    <text font-family="Anton, Impact, sans-serif" font-size="100" fill="#ffffff" letter-spacing="-2">BOMBER BOAT</text>
+    <line x1="-300" y1="35" x2="300" y2="35" stroke="#cc0000" stroke-width="3"/>
+    <text y="80" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="28" fill="#ffffff" letter-spacing="6">SAIL TO MARVEL  ·  UP THE BOMBERS</text>
+  </g>
+  <g transform="translate(540, 320)" text-anchor="middle">
+    <rect x="-260" y="-50" width="520" height="60" rx="30" fill="url(#gold)"/>
+    <text y="-9" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="#0a0a0a" letter-spacing="6">MAIDEN VOYAGE OFFER</text>
+    <text y="120" font-family="Anton, Impact, sans-serif" font-size="135" fill="#ffffff" letter-spacing="-2">SAIL ONCE.</text>
+    <text y="260" font-family="Anton, Impact, sans-serif" font-size="135" fill="url(#red)" letter-spacing="-2">SEE TWICE.</text>
+    <text y="340" font-family="Barlow, sans-serif" font-weight="600" font-size="32" fill="#cccccc">Book Saturday's first sailing —</text>
+    <text y="385" font-family="Barlow, sans-serif" font-weight="800" font-size="36" fill="url(#gold)">your next home game is on us.</text>
+  </g>
+  <g transform="translate(540, 800)" font-family="Barlow, sans-serif" font-weight="700" font-size="24" fill="#ffffff">
+    <g>
+      <rect x="-470" y="0" width="290" height="56" rx="28" fill="rgba(255,255,255,0.06)" stroke="#cc0000" stroke-width="2"/>
+      <text x="-325" y="36" text-anchor="middle">FREE DRINK</text>
+    </g>
+    <g>
+      <rect x="-145" y="0" width="290" height="56" rx="28" fill="rgba(255,255,255,0.06)" stroke="#cc0000" stroke-width="2"/>
+      <text x="0" y="36" text-anchor="middle">FINGER FOOD</text>
+    </g>
+    <g>
+      <rect x="180" y="0" width="290" height="56" rx="28" fill="rgba(255,255,255,0.06)" stroke="#cc0000" stroke-width="2"/>
+      <text x="325" y="36" text-anchor="middle">CHEAP BAR</text>
+    </g>
+  </g>
+  <g transform="translate(540, 945)" text-anchor="middle">
+    <text font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="url(#gold)" letter-spacing="4">ONLY 60 SEATS  ·  DEPARTS CAFE RIVIERA</text>
+  </g>
+  <g transform="translate(540, 1015)" text-anchor="middle">
+    <rect x="-490" y="-30" width="980" height="84" rx="14" fill="url(#red)"/>
+    <text y="28" font-family="Anton, Impact, sans-serif" font-size="54" fill="#ffffff" letter-spacing="2">BOMBERBOAT.COM.AU</text>
+  </g>
+</svg>
