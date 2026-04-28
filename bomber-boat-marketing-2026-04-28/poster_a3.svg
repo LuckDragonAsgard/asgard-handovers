@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="2480" height="3508" viewBox="0 0 2480 3508">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="55%" stop-color="#141414"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#ff1f1f"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#f5c542"/>
+      <stop offset="100%" stop-color="#ffe27a"/>
+    </linearGradient>
+    <linearGradient id="waterGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0a2540"/>
+      <stop offset="100%" stop-color="#040d1a"/>
+    </linearGradient>
+    <pattern id="ripples" patternUnits="userSpaceOnUse" width="80" height="40">
+      <path d="M0 30 Q 20 18, 40 30 T 80 30" stroke="rgba(255,255,255,0.06)" stroke-width="2" fill="none"/>
+    </pattern>
+  </defs>
+  <rect width="2480" height="3508" fill="url(#bgGrad)"/>
+  <polygon points="0,0 980,0 0,980" fill="url(#redGrad)" opacity="0.92"/>
+  <polygon points="0,1020 380,0 0,0" fill="#ffffff" opacity="0.10"/>
+  <rect x="0" y="2740" width="2480" height="768" fill="url(#waterGrad)"/>
+  <rect x="0" y="2740" width="2480" height="768" fill="url(#ripples)"/>
+  <g transform="translate(1240, 2940)">
+    <path d="M -640 60 Q -560 140 -440 150 L 440 150 Q 560 140 640 60 Z" fill="#0a0a0a" stroke="#cc0000" stroke-width="6"/>
+    <path d="M -260 100 L 260 100 L 230 150 L -290 150 Z" fill="url(#redGrad)"/>
+    <rect x="-360" y="-110" width="720" height="170" rx="14" fill="#1a1a1a" stroke="#cc0000" stroke-width="5"/>
+    <g fill="#ffe27a">
+      <rect x="-330" y="-85" width="80" height="60" rx="6"/>
+      <rect x="-220" y="-85" width="80" height="60" rx="6"/>
+      <rect x="-110" y="-85" width="80" height="60" rx="6"/>
+      <rect x="0" y="-85" width="80" height="60" rx="6"/>
+      <rect x="110" y="-85" width="80" height="60" rx="6"/>
+      <rect x="220" y="-85" width="80" height="60" rx="6"/>
+    </g>
+    <rect x="-300" y="-160" width="600" height="50" rx="6" fill="#0a0a0a" stroke="#cc0000" stroke-width="3"/>
+    <rect x="-50" y="-260" width="6" height="100" fill="#cc0000"/>
+    <polygon points="-44,-260 60,-242 -44,-220" fill="url(#redGrad)"/>
+    <path d="M -640 80 Q -700 110 -760 90" stroke="rgba(255,255,255,0.7)" stroke-width="5" fill="none"/>
+    <path d="M 640 80 Q 700 110 760 90" stroke="rgba(255,255,255,0.7)" stroke-width="5" fill="none"/>
+  </g>
+  <g transform="translate(1240, 320)" text-anchor="middle">
+    <text x="0" y="0" font-family="Anton, Impact, sans-serif" font-size="220" fill="#ffffff" letter-spacing="-4">BOMBER</text>
+    <text x="0" y="200" font-family="Anton, Impact, sans-serif" font-size="220" fill="url(#redGrad)" letter-spacing="-4">BOAT</text>
+    <line x1="-560" y1="270" x2="560" y2="270" stroke="#cc0000" stroke-width="6"/>
+    <text x="0" y="360" font-family="Barlow Condensed, sans-serif" font-size="64" font-weight="700" fill="#ffffff" letter-spacing="12">THE BOMBERS FAN BOAT TO MARVEL STADIUM</text>
+  </g>
+  <g transform="translate(140, 850)">
+    <rect x="0" y="0" width="2200" height="700" rx="32" fill="#0a0a0a" stroke="url(#goldGrad)" stroke-width="6"/>
+    <text x="1100" y="140" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="58" fill="url(#goldGrad)" letter-spacing="14">MAIDEN VOYAGE OFFER</text>
+    <text x="1100" y="320" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="180" fill="#ffffff" letter-spacing="-2">SAIL ONCE.</text>
+    <text x="1100" y="500" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="180" fill="url(#redGrad)" letter-spacing="-2">SEE TWICE.</text>
+    <text x="1100" y="600" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="600" font-size="46" fill="#cccccc">Book a seat on the first sailing this Saturday  --</text>
+    <text x="1100" y="660" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="800" font-size="46" fill="url(#goldGrad)">your next home game is on us.</text>
+  </g>
+  <g transform="translate(140, 1640)">
+    <g>
+      <rect x="0" y="0" width="525" height="220" rx="20" fill="#1a1a1a" stroke="#cc0000" stroke-width="3"/>
+      <text x="262" y="100" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="#ffffff">FREE</text>
+      <text x="262" y="160" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="url(#redGrad)">DRINK</text>
+      <text x="262" y="200" text-anchor="middle" font-family="Barlow, sans-serif" font-size="28" fill="#cccccc">on arrival</text>
+    </g>
+    <g transform="translate(560,0)">
+      <rect x="0" y="0" width="525" height="220" rx="20" fill="#1a1a1a" stroke="#cc0000" stroke-width="3"/>
+      <text x="262" y="100" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="#ffffff">FINGER</text>
+      <text x="262" y="160" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="url(#redGrad)">FOOD</text>
+      <text x="262" y="200" text-anchor="middle" font-family="Barlow, sans-serif" font-size="28" fill="#cccccc">complimentary</text>
+    </g>
+    <g transform="translate(1120,0)">
+      <rect x="0" y="0" width="525" height="220" rx="20" fill="#1a1a1a" stroke="#cc0000" stroke-width="3"/>
+      <text x="262" y="100" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="#ffffff">CHEAP</text>
+      <text x="262" y="160" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="url(#redGrad)">BAR</text>
+      <text x="262" y="200" text-anchor="middle" font-family="Barlow, sans-serif" font-size="28" fill="#cccccc">all the way home</text>
+    </g>
+    <g transform="translate(1680,0)">
+      <rect x="0" y="0" width="525" height="220" rx="20" fill="#1a1a1a" stroke="#cc0000" stroke-width="3"/>
+      <text x="262" y="100" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="#ffffff">NO</text>
+      <text x="262" y="160" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="64" fill="url(#redGrad)">CITYLINK</text>
+      <text x="262" y="200" text-anchor="middle" font-family="Barlow, sans-serif" font-size="28" fill="#cccccc">no parking, no fuss</text>
+    </g>
+  </g>
+  <g transform="translate(1240, 2050)" text-anchor="middle">
+    <text x="0" y="0" font-family="Barlow, sans-serif" font-size="56" font-weight="800" fill="#ffffff">Cafe Riviera, Maribyrnong  to  Marvel Stadium</text>
+    <text x="0" y="80" font-family="Barlow, sans-serif" font-size="42" font-weight="500" fill="#cccccc">Departs 1.5 hrs before bounce  ·  Returns 30 min after final siren</text>
+  </g>
+  <g transform="translate(140, 2240)">
+    <rect x="0" y="0" width="2200" height="380" rx="28" fill="url(#redGrad)"/>
+    <text x="1100" y="140" text-anchor="middle" font-family="Anton, Impact, sans-serif" font-size="130" fill="#ffffff">BOOK YOUR SEAT</text>
+    <text x="1100" y="250" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="800" font-size="76" fill="#ffffff">bomberboat.com.au</text>
+    <text x="1100" y="330" text-anchor="middle" font-family="Barlow, sans-serif" font-weight="500" font-size="40" fill="#ffffff" opacity="0.92">Only 60 seats  ·  Card payment  ·  Stripe secure  ·  QR boarding pass</text>
+  </g>
+  <g transform="translate(1240, 3460)" text-anchor="middle">
+    <text font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="44" fill="#ffffff" letter-spacing="6">55 CUMBERLAND DR, MARIBYRNONG  ·  @bomberboat  ·  #UpTheBombers</text>
+  </g>
+</svg>
