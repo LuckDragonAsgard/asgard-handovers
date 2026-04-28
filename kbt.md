@@ -1,67 +1,58 @@
-# KBT — Know Brainer Trivia Handover
+# KBT — Handover
+**Last updated:** 2026-04-29 (Session: AI tools + Question Engine)
 
-**RESUME-HERE:** `github.com/LuckDragonAsgard/kbt-trivia-tools/blob/main/RESUME-HERE.md`
+## Canonical cold-start
+Fetch and read: `https://raw.githubusercontent.com/LuckDragonAsgard/kbt-trivia-tools/main/RESUME-HERE.md`
 
-## Stack (as of 2026-04-29)
+## Live stack
+| Layer | URL / ID |
+|---|---|
+| Host app | `luckdragonasgard.github.io/kbt-trivia-tools/host-app.html` |
+| Player app | `…/player-app.html?code=EVENT_CODE` |
+| Admin app | `…/admin-app.html` |
+| Wrap | `…/wrap.html?event=EVENT&team=TEAMCODE` |
+| Question candidates review | `…/question-candidates.html` |
+| AI tools worker | `kbt-api.pgallivan.workers.dev` (Luck Dragon Main `a6f47c17`) |
+| Question engine | `kbt-question-engine.pgallivan.workers.dev` (same account) |
+| Repo | `LuckDragonAsgard/kbt-trivia-tools` (GH Pages, auto-deploy ~25s) |
+| Supabase | `huvfgenbcaiicatvtxak.supabase.co` (ap-southeast-2, 35 tables) |
 
-| Layer | Detail |
-|-------|--------|
-| Frontend | GitHub Pages — `LuckDragonAsgard/kbt-trivia-tools` (auto-deploy on push to main, ~25s) |
-| Backend | CF Worker `kbt-api` on Luck Dragon Main (`a6f47c17`) |
-| Database | Supabase `huvfgenbcaiicatvtxak.supabase.co` (ap-southeast-2, 34 KBT tables, RLS on) |
-| Auth (Google) | OAuth2 refresh token — `paddy@luckdragon.io` / KBT Host App client |
+## AI tools — ALL ✅ (as of 2026-04-29)
+`fact-check`, `ai-text`, `fal-morph`, `fal-faceswap`, `fal-inpaint`, `fal-rembg`, `generate-slides`
 
-## Live URLs
+**Google Slides note:** GCP org policy blocks SA key creation on `bubbly-clarity-494509-g0`. Worker uses OAuth2 refresh token flow instead (client ID `342815819710-…`, secrets `GOOGLE_CLIENT_ID/SECRET/REFRESH_TOKEN` set on worker). If refresh token expires, re-auth via OAuth Playground → `https://developers.google.com/oauthplayground`, scope `presentations`, account `paddy@luckdragon.io`.
 
-- **Host app:** `https://luckdragonasgard.github.io/kbt-trivia-tools/host-app.html`
-- **Player URL:** `https://luckdragonasgard.github.io/kbt-trivia-tools/player-app.html?code=EVENT_CODE`
-- **Admin app:** `https://luckdragonasgard.github.io/kbt-trivia-tools/admin-app.html`
-- **Wrap:** `…/wrap.html?event=EVENT&team=TEAMCODE`
-- **Backend Worker:** `https://kbt-api.pgallivan.workers.dev`
-- **Vault:** `asgard-vault.pgallivan.workers.dev` X-Pin `2967`
+**fal-rembg note:** Worker upload works; fal.ai CDN occasionally fails to serve the uploaded image back to its own rembg service. Platform-side issue — retry if it fails.
 
-## Secrets status (all ✅ as of 2026-04-29)
+## Question Engine — NEW (2026-04-29)
+- **Worker:** `kbt-question-engine.pgallivan.workers.dev`
+- **Cron:** every 6 hours (`0 */6 * * *`) — runs automatically
+- **Manual trigger:** `POST /run` with `{"max_facts": N}` (max 20)
+- **Review UI:** `luckdragonasgard.github.io/kbt-trivia-tools/question-candidates.html`
+- **DB table:** `kbt_question_candidates` (Supabase)
+- **Pipeline:** scrape (Wikipedia random, On This Day, Reddit TIL) → Claude generates Q drafts → double fact-check (FC1 accuracy + FC2 devil's advocate) → quality score 10 criteria /50 → save with status
+- **Thresholds:** 35+/50 → `pending_review`, 45+/50 → `APPROVED` verdict, <35 → `rejected`
+- **Gambler flag:** only on questions scoring 45+/50 with zero FC issues
+- **Sources:** `workers/kbt-question-engine.js` in the repo
 
-| Secret | Status | Notes |
-|--------|--------|-------|
-| `FAL_KEY` | ✅ set | fal.ai account `paddy@luckdragon.io`, $20 credits loaded 2026-04-28 |
-| `ANTHROPIC_API_KEY` | ✅ set | Used for fact-check |
-| `GOOGLE_CLIENT_ID` | ✅ set | `342815819710-sugohi5jr60hs2mfv1vgi4apfp3p2bjc` (KBT Host App) |
-| `GOOGLE_CLIENT_SECRET` | ✅ set | Created 2026-04-29 (old secret hidden by GCP, new one created) |
-| `GOOGLE_REFRESH_TOKEN` | ✅ set | `paddy@luckdragon.io` auth, scope: presentations. Generated via OAuth Playground 2026-04-29 |
+## New question types in DB (ids 36–48)
+Closest Wins, Connections, Two Truths One Lie, Emoji Decode, Chain Round, Lightning Round, Before & After, Picture Plus, Famous Firsts, Wipeout, Accumulator, Steal Round, Survivor
 
-**Note:** SA key approach abandoned — GCP org policy `iam.disableServiceAccountKeyCreation` enforced on `bubbly-clarity-494509-g0`. Worker now uses OAuth2 refresh token flow instead.
+## New bonus/format tags
+Event Format: HQ Live, Weekly School, Pub, Fundraiser, Work Function, Family
+Round Mechanic: Accumulator, Steal, Survivor
 
-## Tool status (all ✅ as of 2026-04-29)
+## Product brief
+Full brief at `docs/kbt-question-engine-brief.md` in the repo — covers quality criteria, all new question types, HQ Live format, Weekly School format, feature roadmap.
 
-| Tool | Status |
-|------|--------|
-| fact-check | ✅ live and tested |
-| ai-text | ✅ live |
-| fal-morph | ✅ live (fal.ai billing topped up) |
-| fal-faceswap | ✅ live |
-| fal-inpaint | ✅ live |
-| fal-rembg | ✅ live |
-| generate-slides | ✅ live (OAuth refresh token) |
+## Vault / secrets access
+- Vault PIN rotated — now `PADDY_PIN` env binding (v1.2.0-pin-rotation). Do NOT rely on hardcoded `2967` directly.
+- GitHub PAT: vault key is `GITHUB_TOKEN` (not `GITHUB_PAT_LUCKDRAGON`)
+- Best path to secrets: `POST asgard-tools.pgallivan.workers.dev/chat/smart` with `get_secret("KEY_NAME")` — works with X-Pin: 2967 on asgard-tools
 
-## Accounts
-
-- GitHub: `LuckDragonAsgard` org
-- Google/Supabase/GCP: `paddy@luckdragon.io`
-- GCP project: `bubbly-clarity-494509-g0` ("Google Slides")
-- CF account: Luck Dragon Main (`a6f47c17811ee2f8b6caeb8f38768c20`)
-- CF API token: `cfut_W413...` (Edit Workers, All zones — created 2026-04-28)
-
-## Outstanding / Feature backlog
-
-- Realtime push (vs 3s polling)
-- Push-question to players
-- Captain-reassign UI
-- PDF customisation
-- Question-bank UX
-- Per-venue analytics
-- Player profiles
-
-## Repo hygiene (still to do)
-
-Delete from repo: `_bashprobe.txt`, `_probe.bin`, `api/*.js`, `vercel.json`, `.vercel/`, `deploy*.bat`
+## Outstanding (non-blocking)
+- HQ Live format — elimination logic + Realtime timer push (design in brief)
+- Weekly School format — shorter event type, school-mode player app
+- New question type UIs in host-app (Closest Wins input, Connections grid, Emoji display)
+- Promote approved candidates → `kbt_question` table (admin button in question-candidates.html)
+- fal-rembg CDN issue — monitor, raise with fal.ai support if persistent
