@@ -1,89 +1,80 @@
-# SportPortal — HANDOVER (2026-04-29, Session 10 — transport update)
+# SportPortal — EOD Handover (Session 11, 2026-04-29)
 
----
+## TL;DR
+4-domain school sports SaaS on CF Pages + Firestore. Pitch materials complete.
+Asgard D1 now has 20 rich facts covering all projects.
 
-## TL;DR for the next session
+## Session 11 deliverables
+- Inserted 20 comprehensive facts into Asgard D1 (all 20 OK)
+  - sportportal: urls, ssv_structure, hours_per_role, cost_model_figures, transport_cascade,
+    external_stakeholders, email_catalog, pitch_documents, revenue_projections_5yr, infra_state
+  - bomberboat: urls, revenue_model, corporate_ideas
+  - kbt: urls
+  - carnivaltiming: urls
+  - judyskitchen: state
+  - clubhouse: state
+  - asgard: urls
+  - bulldogsboat: state
+  - luckdragon: all_projects (master index)
 
-- All four domains are **Cloudflare Pages projects with direct upload** — NOT workers.
-- **carnivaltiming.com is LIVE and GREEN** — mojibake fixed, demo feature deployed (Session 6.1).
-- **Two regressions still outstanding**: A (sportcarnival.com.au placeholder) and B (schoolsportportal demo pages missing).
-- **Session 9–10 work: email catalog (33 types) + external stakeholder chain + transport deep-dive documented.**
-- **Key deliverable this session:** `ssv-admin-burden-analysis.docx` — full hours doc with transport cascade detail. Statewide figure updated to **~$8.36M/year**.
+## Session 10 deliverables (still current)
+- G:\My Drive\ssv-admin-burden-analysis.docx — hours doc with real email evidence, ~$8.36M/yr statewide
+- G:\My Drive\ssv-admin-cost-model-v2.xlsx — 6-sheet Excel model with all figures
+- G:\My Drive\sportportal-comparison.html — 33-email catalog + external stakeholder section (6 cards)
+- SSV structure: 1,600 schools, 232 districts, 55 divisions, 16 regions
+- CRT rate: $70.97/hr (DET Victoria, July 2025)
+Sport Portal Drive folder: 1SVbCqDwD7AztVXmijffRTPdCi_JoGQr6
 
----
+## Cost model (all figures)
+- Statewide annual admin cost: **$8,362,146/yr**
+- PE Teachers: 1,600 x $3,620/yr = $5,792,000
+- District: 232 x $7,984/yr = $1,852,288
+- Division: 55 x $9,475/yr = $521,125
+- Region: 16 x $12,349/yr = $197,584
 
-## Sessions 9–10 (2026-04-28/29) — what got built
+## Hours per role per carnival
+| Role | Hrs/carnival | Hrs/yr | Cost/yr |
+|---|---|---|---|
+| PE Teacher | 17 | 51 | $3,620 |
+| District Coord | 37.5 | 112.5 | $7,984 |
+| Division Coord | 44.5 | 133.5 | $9,475 |
+| Region Coord | 58 | 174 | $12,349 |
 
-### 1. Email catalog expansion (Session 9)
-- Stats bar updated: **33** distinct email types catalogued (was 8)
-- Division count corrected: **55** (from 2026-27 PDs), was 40
-- Statewide cost corrected: **$337K/yr** per division tier, ~**$5.6M** total (HTML)
-- Full 9-category email catalog section added to HTML with all 33 types
+## Revenue projections (5-year)
+| Year | Scope | ARR |
+|---|---|---|
+| Year 1 | Pilot: 3 divisions, 15 districts | $30,000 |
+| Year 2 | 3 regions, 10 div, 50 dist | $100,000 |
+| Year 3 | 8 regions, 28 div, 120 dist | $260,000 |
+| Year 4 | Statewide VIC: 55 div, 232 dist | $507,000 |
+| Year 5 | VIC lock-in + NSW pilot | $500k-$800k |
 
-### 2. External stakeholder chain (Session 10)
-New section added to `sportportal-comparison.html` — **"The Bigger Play"**:
-- 6 external stakeholder cards: Councils, Aquatic Centres, First Aid, Officials/Umpires, Parent Volunteers, Transport
-- Real email evidence in each card (council bookings, WynActive pool hire, Sports Aid, parent volunteers)
+Pricing: Division $5,000/yr (1.9x ROI), District $1,000/yr (8x ROI), Schools free tier
 
-### 3. Transport deep-dive (Session 10 update)
-Transport card in HTML fully expanded with:
-- **PE Teacher transport tasks**: 8 tasks itemised, ~3.0 hrs/carnival (was 2.0)
-  - Permission slips (100+ students) · Chase non-returners · Parent-driver DET consent forms · Bus inquiry · Confirm final numbers · Student manifest · Send program + fixture to bus company · Day-of call if late
-- **Division Coordinator transport tasks**: ~2.5 hrs/carnival
-  - Program distribution to all schools · Fixture distribution · Venue access brief · Field school queries · Resend updated program · Day-of delay management
-- **The cascade bottleneck**: entries close → draw → program → numbers confirmed → bus booked → 2 days out
-- **8 documents per school per carnival** just for transport (listed)
-- SportPortal fix: confirmed count live at entry close, program auto-generates timetable, bus company receives structured brief automatically
+## Architecture
+All 4 domains on Luck Dragon Main CF account (a6f47c17811ee2f8b6caeb8f38768c20):
 
-### 4. ssv-admin-burden-analysis.docx (updated)
-**File:** `G:\My Drive\ssv-admin-burden-analysis.docx`
-Updated statewide figures (now including full transport cascade):
-- PE Teacher: 17 hrs/carnival, 51 hrs/yr, **$3,620/yr**
-- District Coordinator: 37.5 hrs/carnival, 112.5 hrs/yr, **$7,984/yr**
-- Division Coordinator: 44.5 hrs/carnival, 133.5 hrs/yr, **$9,475/yr**
-- Region Coordinator: 58 hrs/carnival, 174 hrs/yr, **$12,349/yr**
-- **Statewide total: ~$8.36M/year** (up from $7.9M — transport now fully counted)
+| Domain | CF Pages project | NS pair |
+|---|---|---|
+| sportportal.com.au | sportportal | coraline+renan |
+| schoolsportportal.com.au | schoolsportportal | coraline+renan |
+| sportcarnival.com.au | (auto-attached) | (CF) |
+| carnivaltiming.com | carnival-timing | liv+quinton |
 
----
+Firebase: willy-district-sport (australia-southeast1), SDK v9.23.0 compat
 
-## Outstanding regressions (carried from Session 6.1)
-
-### A — sportcarnival.com.au shows placeholder content
-Status: **NOT FIXED**. Fix: locate correct build in Drive `SportPortal-build/` folder and redeploy via wrangler.
-
-### B — schoolsportportal demo pages missing
-Status: **NOT FIXED**. Fix: rollback via deployment history or rebuild 4 demo pages + 9 district stubs.
-
-### C — carnivaltiming.com ✅ FIXED (Session 6.1)
-
----
+## Known regressions (not urgent)
+- **A**: sportcarnival.com.au showing placeholder — rebuild from Drive SportPortal-build/
+- **B**: schoolsportportal.com.au missing demo pages (/demo-school, /demo-district, /altonadistrict)
 
 ## Key facts
+- VentraIP #45838174: sportportal.com.au, schoolsportportal.com.au
+- sportcarnival.com.au registrar: Tucows/OpenSRS
+- carnivaltiming.com: CF Registrar
+- Stripe: approved, login pat_gallivan@hotmail.com (NOT paddy@luckdragon.io)
+- CF account: a6f47c17811ee2f8b6caeb8f38768c20
 
-- Firebase project: `willy-district-sport`, Firestore `australia-southeast1` (Sydney)
-- Firebase SDK: v9.23.0 compat layer (`firebase-firestore-compat.js`)
-- Stripe payment link: `https://buy.stripe.com/bJe9AS2DH6wH7N6ckm9IQ04` ($1 AUD/student) — live
-- VentraIP account #45838174: sportportal.com.au, schoolsportportal.com.au
-- sportcarnival.com.au registrar: Tucows/OpenSRS (NOT VentraIP)
-- carnivaltiming.com: now CF Registrar
-- Stripe approval: Google sign-in with pat_gallivan@hotmail.com (NOT paddy@luckdragon.io)
+## Outstanding
 - ASIC Form 484 (Corporate Key) — postal letter ETA ~2026-05-02
 - info@sportportal.com.au email setup — not done
-- SSV structure: 1,600 schools, 232 districts, **55 divisions**, 16 region coordinators
-- CRT rate: $425.80/day, $70.97/hr (DET Victoria, July 2025)
-
----
-
-## Working tokens
-
-```bash
-curl -H "X-Pin: <pin>" https://asgard-vault.pgallivan.workers.dev/secret/CF_FULLOPS_TOKEN
-curl -H "X-Pin: <pin>" https://asgard-vault.pgallivan.workers.dev/secret/GITHUB_TOKEN
-```
-
-CF_ACCOUNT_ID: `a6f47c17811ee2f8b6caeb8f38768c20` (Luck Dragon Main)
-
----
-
-Last updated: 2026-04-29, Session 10 transport update (~$8.36M statewide, 8 transport docs per school per carnival).
-
+- Regression A + B fixes when ready
