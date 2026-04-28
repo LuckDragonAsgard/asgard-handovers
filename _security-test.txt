@@ -1,1 +1,1 @@
-test
+This file was created during a security audit on 2026-04-28 to verify gh-push had no auth. It has been noted and the fix is in asgard-source/workers/gh-push.js. Safe to delete.
