@@ -12,9 +12,9 @@
 ```
 Hi team,
 
-I run Bomber Boat — a fan ferry from Cafe Riviera in Maribyrnong straight to Marvel Stadium for every Bombers home game. Free drink on arrival, hot finger food on board, cheap bar all the way, and the boat waits 30 minutes after the final siren to bring everyone home.
+We run Bomber Boat — a fan ferry from Cafe Riviera in Maribyrnong straight to Marvel Stadium for every Bombers home game. Free drink on arrival, hot finger food on board, cheap bar all the way, and the boat waits 30 minutes after the final siren to bring everyone home.
 
-This Saturday vs Brisbane is the first ever sailing. I'd love to fill the boat with Cheer Squad members.
+This Saturday vs Brisbane is the first ever sailing. We'd love to fill the boat with Cheer Squad members.
 
 Two things on offer:
 
@@ -23,12 +23,12 @@ Two things on offer:
 
 60 seats only. $55 adult / $25 child return — includes the drink and food.
 
-Booking: bomberboat.com.au — or reply and I'll set up a single group invoice.
+Booking: bomberboat.com.au — or reply to this email and we'll set up a single group invoice.
 
 Up the Bombers,
-Paddy Gallivan
-Bomber Boat
-0400 — — — (Paddy's mobile)
+The Bomber Boat crew
+hello@bomberboat.com.au
+bomberboat.com.au
 ```
 
 **Other groups worth pinging the same day:**
@@ -47,7 +47,7 @@ Mate — Bomber Boat first sailing is Sat vs Brisbane. Boat from Maribyrnong, fr
 
 **B. Existing waitlist (signed up via the site already):**
 ```
-Hi — it's Paddy from Bomber Boat. The first sailing is THIS Sat vs Brisbane and you're on the early list. Maiden voyage offer for waitlisters: book Saturday and your next home game is on us. Pick any home game.
+Hi — Bomber Boat here. The first sailing is THIS Sat vs Brisbane and you're on the early list. Maiden voyage offer for waitlisters: book Saturday and your next home game is on us. Pick any home game.
 
 60 seats only. bomberboat.com.au
 
@@ -56,7 +56,7 @@ Reply STOP to opt out.
 
 **C. Cold contacts (mates of mates, given by someone you know):**
 ```
-G'day — [referrer] gave me your number. Running Bomber Boat — fan ferry from Maribyrnong to Marvel for Bombers home games. First sailing is this Sat vs Brisbane. Free drink, food, cheap bar, no parking. Book Saturday and your next home game is free. bomberboat.com.au — Paddy.
+G'day — [referrer] gave me your number. Running Bomber Boat — fan ferry from Maribyrnong to Marvel for Bombers home games. First sailing is this Sat vs Brisbane. Free drink, food, cheap bar, no parking. Book Saturday and your next home game is free. bomberboat.com.au — the Bomber Boat crew.
 ```
 
 ---
