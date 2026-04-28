@@ -1,4 +1,4 @@
-# SportPortal — HANDOVER (2026-04-28, Session 8)
+# SportPortal — HANDOVER (2026-04-29, Session 10)
 
 ---
 
@@ -7,60 +7,52 @@
 - All four domains are **Cloudflare Pages projects with direct upload** — NOT workers.
 - **carnivaltiming.com is LIVE and GREEN** — mojibake fixed, demo feature deployed (Session 6.1).
 - **Two regressions still outstanding**: A (sportcarnival.com.au placeholder) and B (schoolsportportal demo pages missing).
-- **Session 8 work: comparison/pitch document built** — see `G:\My Drive\sportportal-comparison.html` (full evidence-based comparison of current school sport admin vs SportPortal).
-- **Deploy method confirmed**: `CLOUDFLARE_API_TOKEN=<token> CLOUDFLARE_ACCOUNT_ID=a6f47c17... npx wrangler pages deploy <dir> --project-name=<name>` — hash-based direct upload API returns 500, wrangler works fine.
+- **Session 9–10 work: email catalog (33 types) + external stakeholder chain documented** — comparison HTML fully updated, Word doc built with itemised hours.
+- **Key deliverable this session:** `ssv-admin-burden-analysis.docx` — the "no one can argue" hours doc. Full evidence, ~$7.9M/year statewide figure.
 
 ---
 
-## Session 8 (2026-04-28) — what got built
+## Sessions 9–10 (2026-04-28/29) — what got built
 
-### Comparison / pitch document
-- **File:** `G:\My Drive\sportportal-comparison.html` — self-contained single HTML file, opens in browser
-- **Purpose:** Evidence-based comparison showing current school sport admin pain vs SportPortal solution — for pitching to PE teachers, principals, SSV, investors
-- **Content:**
-  - Stats bar: 4+ spreadsheet versions, 6 schools per carnival, 72 Division events, 0 automated rule enforcement, 8+ email threads per carnival
-  - 11-step "Current Reality" walkthrough grounded in real Drive docs (WPS Athletics 2019/2021 spreadsheets, District Swimming Carnival instructions.docx, 2019 Division Athletics Program.pdf)
-  - **"Real Emails, Real Pain" section** — 8 cards from actual Outlook email evidence:
-    1. Paddy's own Division entries email: *"numerous changes due to students qualifying for too many events... I may have made a mistake or two"*
-    2. Sunday night before Thursday carnival: *"Just waiting on one final District entry. I will try and get the final full programs into Meet Manager tomorrow night"*
-    3. Post-event wrong-school correction: Ethan Easow listed under wrong school in published results (Paddy ↔ Lee Jarvis)
-    4. Missing qualifier: Truganina South PS won District but absent from Division draw
-    5. Parent complaint (Nikki Little → Paddy): Shannon Hager couldn't find Division track & field program on SSV website
-    6. Meet Manager reinstall scramble: Mel Camilleri, March 2026 — desktop software broke before a carnival
-    7. WMR staffing email (Jason Maxwell, Mar 2026): *"Paddy; assuming you are coming mate, do you have a Wyndham Rep?"* — no RSVP system, all via group email
-    8. Parent transport consent: David Nahm driving students, consent collected entirely via email chain
-  - 14-row head-to-head comparison table (today vs SportPortal)
-  - Visual flow diagrams (7-step current vs 5-step SportPortal)
-  - "Who Benefits" section (6 stakeholder types)
-  - Pull-quote CTA: *"With all the changes I may have made a mistake or two also so please look over it all carefully"*
-  - CTAs to schoolsportportal.com.au and carnivaltiming.com
+### 1. Email catalog expansion (Session 9)
+- Stats bar updated: **33** distinct email types catalogued (was 8)
+- Division count corrected: **55** (from 2026-27 PDs), was 40
+- Statewide cost corrected: **$337K/yr** per division tier, ~**$5.6M** total (HTML)
+- Full 9-category email catalog section added to HTML with all 33 types:
+  - Cat 1: Entry Collection Chain (3) · Cat 2: Data Errors (6) · Cat 3: Missing Entries & Draw Errors (3)
+  - Cat 4: The 4→2 Event Cliff (3) · Cat 5: Results Distribution & Disputes (4) · Cat 6: Meet Manager Pain (3)
+  - Cat 7: Logistics & Coordination (5) · Cat 8: Rule Inconsistency Queries (3) · Cat 9: Admin & Payment (3)
 
-### Email evidence sources
-Emails read via Claude in Chrome (Outlook Web, school account tab):
-- Searched: SSV, Mel Camilleri, Jason Maxwell, Nikki Little, Lee Jarvis, district, division entries, Meet Manager, WMR swim staff
-- Tab: outlook.office.com (school Microsoft 365 account — pat_gallivan@hotmail.com is personal; school account is separate)
-- Key threads: Division aths entries (self-authored), WMR Swim Staff (Jason Maxwell Mar 2026), Nikki Little Wyndham Region (Sep 2025), Ethan Easow wrong-school post-event, Truganina South PS missing fixture, Mel Camilleri Meet Manager install, Sunday-night program email
+### 2. External stakeholder chain (Session 10)
+New section added to `sportportal-comparison.html` — **"The Bigger Play"**:
+- 6 external stakeholder cards: Councils, Aquatic Centres, First Aid, Officials/Umpires, Parent Volunteers, Transport
+- Real email evidence in each card:
+  - Council booking #BP8995 (Wyndham, Marc Camilleri, Dec 2025)
+  - Council booking #14811 (Maribyrnong, Terry Antoniadis → Paddy, Mar 2026)
+  - WynActive pool hire (James, aquaticbookings@wynactive.com.au, Nov 2025) — Hire Agreement + 2× Application Forms + CoC
+  - Sports Aid officials/first aid (James Theodorakopoulos, Oct 2025, High Importance, 15MB PDF)
+  - Parent volunteer coordination ("asking parents to take a day off to time a lane")
+- Totals callout: **+8–12 hrs per carnival** from external coordination alone
+- SportPortal fix per category described
 
-### Outstanding email evidence NOT yet captured
-- Specific named-student "too many events" incident (e.g. kid found in 3 events by name) — systemic issue documented but no specific incident email found
-- "swimming entries" search not done
-- "cross country" search not done
-- Rayoni Nelson SSV intro email not read
-- Lee Jarvis "Division swimming" / "Don't be like that Paddy! Be kind..." email not read
-
----
-
-## Domain → CF Pages project map (verified Apr-28 via API)
-
-| Domain | CF Pages project | `pages.dev` URL |
-|---|---|---|
-| `sportportal.com.au` | `sportportal` | `sportportal.pages.dev` |
-| `schoolsportportal.com.au` | `schoolsportportal` | `schoolsportportal.pages.dev` |
-| `sportcarnival.com.au` | `sportcarnival-hub` | `sportcarnival-hub.pages.dev` |
-| `carnivaltiming.com` | `carnival-timing` | `carnival-timing.pages.dev` |
-
-All four projects: **direct upload**, no git connection. Deploy via `wrangler pages deploy <dir> --project-name=<name>`.
-Account ID: `a6f47c17811ee2f8b6caeb8f38768c20` (Luck Dragon Main).
+### 3. ssv-admin-burden-analysis.docx
+**File:** `G:\My Drive\ssv-admin-burden-analysis.docx`  
+Full Word document: "The Hidden Cost of School Sport Administration" — designed for pitching to SSV, principals, councils, investors.
+- **CRT rate:** $425.80/day, $70.97/hr (DET Victoria, July 2025)
+- **Part 1 — Internal Admin Chain:**
+  - PE Teacher: 12 hrs/carnival × 3 carnivals = 36 hrs/yr = $2,555/yr
+  - District Coordinator: 28 hrs/carnival = 84 hrs/yr = $5,964/yr
+  - Division Coordinator: 36 hrs/carnival = 108 hrs/yr = $7,663/yr
+  - Region Coordinator: 48 hrs/carnival = 144 hrs/yr = $10,219/yr
+- **Part 2 — External Stakeholder Chain:** +4–8 hrs per carnival per coordinator role
+- **Part 3 — Combined Totals:**
+  - PE Teacher: 16 hrs/carnival, 48/yr, $3,407/yr
+  - District: 36 hrs, 108/yr, $7,651/yr
+  - Division: 42 hrs, 126/yr, $8,934/yr
+  - Region: 56 hrs, 168/yr, $11,922/yr
+- **Part 4 — Statewide:** ~**$7.9M/year** (1,600 PE + 232 District + 55 Division + 16 Region)
+- **Part 5 — What SportPortal Eliminates** (comparison table)
+- Real email evidence boxes throughout (amber highlight, quoted text, source attribution)
 
 ---
 
@@ -90,6 +82,8 @@ Mojibake fixed. Live demo feature: 8 pre-filled athletes, 4-letter join code, QR
 - Stripe approval: Google sign-in with pat_gallivan@hotmail.com (NOT paddy@luckdragon.io)
 - ASIC Form 484 (Corporate Key) — postal letter ETA ~2026-05-02
 - info@sportportal.com.au email setup — not done
+- SSV structure: 1,600 schools, 232 districts, **55 divisions**, 16 region coordinators (confirmed from 2026-27 PDs)
+- CRT rate: $425.80/day, $70.97/hr (DET Victoria, July 2025)
 
 ---
 
@@ -105,4 +99,5 @@ CF Pages API: does NOT accept `per_page` — call `/pages/projects` with no para
 
 ---
 
-Last updated: 2026-04-28, Session 8 (comparison doc + email evidence session).
+Last updated: 2026-04-29, Session 10 (external stakeholder chain + hours doc + HTML updated).
+
