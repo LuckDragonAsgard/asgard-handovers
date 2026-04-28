@@ -1,104 +1,91 @@
-# Asgard 7.0 — Canonical handover
-
-**Live:** [asgard.pgallivan.workers.dev](https://asgard.pgallivan.workers.dev) — currently v7.9.2.
-
-**Canonical store:** this file (`github.com/PaddyGallivan/asgard-handovers/asgard.md`). Drive copies are pointers only.
-
----
-
-## Source pinned in this repo
-
-Live worker source for the four core CF Workers is committed under:
-- [`sources/asgard.js`](sources/asgard.js) — dashboard worker (currently v7.9.2)
-- [`sources/asgard-tools.js`](sources/asgard-tools.js) — agent loop + admin endpoints
-- [`sources/asgard-brain.js`](sources/asgard-brain.js) — D1 service for the products table + cloud-sync
-- [`sources/asgard-vault.js`](sources/asgard-vault.js) — secret store
-
-Re-pin after each significant deploy by running the live against the CF API and committing the extracted body.
+# Asgard — EOD Handover
+**Session date:** 2026-04-29
+**Version live:** 8.2.0
+**Worker URL:** https://asgard.pgallivan.workers.dev
+**GitHub source:** github.com/PaddyGallivan/asgard-source/blob/main/workers/asgard.js
 
 ---
 
-## Live infrastructure
+## What was done this session
 
-### Asgard dashboard — `asgard.pgallivan.workers.dev`
-- Single-page chat + Project Hub built on Cloudflare Worker.
-- **Project Hub** (added Session 3): pulls 51 rows live from the `products` table in `asgard-brain` D1. Includes status grouping, detail view with revenue Y1/Y2/Y3, income_priority, full description, edit/add/delete that round-trip to D1.
-- **Other features (v7.8.0+):** theme picker, model picker (Claude/OpenAI/Gemini with pricing), live-sync update banner, project tiles + filter chips + sort, PIN gate, cloud-sync of conversations to D1, bridges modal (Chrome + Desktop), settings/stats/deploy modals, image attachments, TTS speak, Slack/Telegram message forwarders, debug info, heartbeat dots in sidebar.
-- **PIN stored in localStorage** as `asgard.pin.v1` — set via Settings → X-Pin field in the dashboard UI.
+### D1 schema migration (asgard-brain)
+Nine new columns added to `products` table via asgard-brain `/run` agent:
+- `cash_spent REAL DEFAULT 0`
+- `cash_earned REAL DEFAULT 0`
+- `hours_needed INTEGER DEFAULT 0`
+- `recommendations TEXT DEFAULT ''`
+- `revenue_y6` through `revenue_y10 REAL DEFAULT 0`
+Total: 39 columns now in products table.
 
-### Asgard tools — `asgard-tools.pgallivan.workers.dev`
-Endpoints: `/health`, `/tools`, `/chat/smart` (Claude agent loop with `http_request`/`get_worker_code`/`deploy_worker`/`get_secret`), `/admin/projects` (live CF inventory, public read-only), `/admin/deploy` (X-Pin, body `{worker_name, code_b64, main_module?}`), `/admin/patch` (find/replace).
+### asgard.js v8.2.0 deployed
+All changes live at https://asgard.pgallivan.workers.dev
 
-**Known deploy bug:** `/admin/deploy` crashes with 1101 (CF unhandled exception) regardless of PIN. Use `sly-deploy` relay pattern or direct CF API instead.
+**No-hard-refresh PIN:**
+- `savePin()` now calls `updateUserPill()` immediately — no page reload needed
+- `updateUserPill()` extracted as standalone function
+- User pill updates live when PIN entered in settings
 
-### gh-push relay — `gh-push.pgallivan.workers.dev`
-**FIXED 2026-04-28** — now requires `Authorization: Bearer <GH_PUSH_BEARER>` on every request. Returns 401 without it. Bearer value set as CF Worker secret. To call:
+**Rich project detail cards:**
+- 6-tile summary grid: Status, Priority, Cash Spent (red), Cash Earned (green), Hours Needed, 10-yr Total
+- Description, Next-to-do (highlighted), Recommendations, Tech stack, Key features
+- Full 10-year revenue forecast table with mini bar charts (Y1–Y10)
+- Live links section at bottom (site + repo)
+
+**Data layer:**
+- `loadProductsFromBrain()` now queries asgard-brain directly from the browser client (bypasses CF worker→worker zone block that caused 1042 errors)
+- SQL SELECT expanded to include all new columns
+- Local PROJECTS map includes: revenue_y6-y10, cash_spent, cash_earned, hours_needed, recommendations
+
+### asgard-tools bug fix
+Fixed `validPins is not defined` ReferenceError in `/admin/deploy` handler — this was causing all deploys to crash with CF error 1101. Fixed via `/admin/patch`. Deployed.
+
+---
+
+## Deploy pipeline state
+
+| Step | Status |
+|------|--------|
+| GitHub source | ✅ `workers/asgard.js` at commit `2fa91874a3ef` |
+| CF Workers | ✅ `asgard` worker v8.2.0 live |
+| D1 schema | ✅ asgard-brain products table has all 39 columns |
+| asgard-tools | ✅ validPins bug fixed, `/admin/deploy` working |
+
+**Deploy path (for next session):**
 ```
-POST https://gh-push.pgallivan.workers.dev/
-Authorization: Bearer <GH_PUSH_BEARER from CF dashboard secrets>
-Content-Type: application/json
-{"owner":"...", "repo":"...", "path":"...", "message":"...", "content":"<base64>", "branch":"main"}
+python3 (build payload.json with code_b64)
+→ POST asgard-tools.pgallivan.workers.dev/admin/deploy  
+   X-Pin: <PADDY_PIN from localStorage>
+   body: {worker_name, code_b64, main_module: "asgard.js"}
 ```
-To get the bearer for a new session: either check CF dashboard → Workers → gh-push → Settings → Variables & Secrets, or reset it to a new known value via CF API (PUT `/secrets` with `GH_PUSH_BEARER`).
 
-> **Preferred path:** asgard-tools calls GitHub Contents API directly using `env.GITHUB_TOKEN` — bypass gh-push entirely. gh-push is only for external/automated callers.
-
-### GitHub writes
-Direct GitHub Contents API. Token in vault as `GITHUB_TOKEN` (or bound directly to asgard-tools).
+**PIN for deploy auth:** Read from browser localStorage at `asgard.pgallivan.workers.dev` key `asgard.pin.v1`
+**GitHub token:** `asgard-vault.pgallivan.workers.dev/secret/GITHUB_TOKEN` (X-Pin header)
 
 ---
 
-## CF tokens
+## Known issues / next priorities
 
-- **Worker-scoped token:** vault → `CF_API_TOKEN` (also as `CF_API_TOKEN` in asgard-tools binding). Scope: Edit Cloudflare Workers only. Use for Worker deploys.
-- **Zone-edit token:** NOT in vault. Required for CF Transform Rules, zone rulesets, HSTS, firewall rules. Create in CF dashboard if needed.
+1. **Product data is empty** — all 51 projects have Y6-Y10 = 0, cash_spent = 0 etc. Need to populate via the Edit flow or a batch update. The edit modal currently only prompts for Y1-Y5. Consider expanding `editProjectFlow()` to include the new fields.
 
----
+2. **asgard-tools /admin/deploy workflow** — GitHub Actions still has the arg-list-too-long bug (uses `-d` shell arg for large payloads) and the workflow file can't be updated without `workflow` scope on the GH token. Not blocking since direct deploy via curl works.
 
-## Known issues / blocked
+3. **CF API tokens in vault are invalid** — `CF_API_TOKEN` and `SLY_CF_TOKEN_2026_04_25` both return 401 from the CF REST API. The deploy path uses asgard-tools as the intermediary (which has its own CF_API_TOKEN binding), so this doesn't block anything currently.
 
-1. **`/admin/deploy` 1101 crash** — crashes before PIN check. Use direct CF API instead (token from vault).
-2. **`get_worker_code` multipart parser BROKEN** — fix: try `Accept: application/json` and parse `result.script`, or strip multipart boundary manually from raw response.
-3. **Zone Transform Rules** — can't set X-Frame-Options / Permissions-Policy / HSTS on CF Pages sites via `_headers` (CF Pages blocks them). Needs zone-edit token to add via Rulesets API, or manual CF dashboard → Zone → Transform Rules.
+4. **Edit flow needs new fields** — `editProjectFlow()` prompts for Y1-Y5 only. Should add prompts (or better, an inline form) for: cash_spent, cash_earned, hours_needed, recommendations, revenue_y6-y10.
 
 ---
 
-## Security state (2026-04-28)
+## Architecture notes
 
-| Asset | Security headers |
-|---|---|
-| `wps.carnivaltiming.com` (CF Worker `wps-hub-v3`) | ✅ HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy |
-| `carnivaltiming.com` (CF Pages) | ⚠️ X-Content-Type-Options + Referrer-Policy (CF defaults). X-Frame-Options/HSTS/Permissions-Policy blocked by CF Pages. |
-| `gh-push.pgallivan.workers.dev` | ✅ Now auth-gated with bearer token |
-| Other CF Pages sites | ⚠️ Same CF defaults only |
+- **Worker→worker calls:** CF blocks `*.pgallivan.workers.dev` → `*.pgallivan.workers.dev` fetches (returns 1042). All cross-worker reads must be client-side or use CF service bindings.
+- **D1 writes from client:** Use asgard-brain `/d1/write` with `X-Pin` header (PADDY_PIN or JACKY_PIN).
+- **Multi-user:** getPinUser() maps PIN prefix → user. Prefixes: `6d06`=paddy, `844c`=jacky, `3df4`=george. All bridge/sync calls use dynamic UID.
+- **asgard-brain DB:** `b6275cb4-9c0f-4649-ae6a-f1c2e70e940f` (asgard-brain D1, `asgard-brain.pgallivan.workers.dev`)
 
 ---
 
-## Pending / next session
-
-1. **Zone Transform Rules** for carnivaltiming.com — add X-Frame-Options + Permissions-Policy + HSTS via CF dashboard (or create zone-edit token). Affects all CF Pages sites on the zone.
-2. **Fix `get_worker_code` parser** (unblocks `/admin/patch`).
-3. **asgard-tools `/admin/deploy` 1101 bug** — debug CF unhandled exception, likely a missing binding or syntax issue in the deploy endpoint.
-4. **GOOGLE_SA_JSON** for kbt-api Worker — get from GCP project `bubbly-clarity-494509-g0`, set via CF API or dashboard.
-
----
-
-## Live inventory snapshot
-
-CF Workers (~113): asgard, asgard-tools, asgard-brain, asgard-vault, asgard-ai, asgard-email, asgard-email-ui, asgard-memory, asgard-monitor, asgard-watchdog, asgard-pingtest, asgard-build, asgard-deploy-helper, asgard-comms, asgard-auth, asgard-agent, asgard-intelligence, asgard-ranking, asgard-workers, ai-job-processor, bomber-boat-api, bout-transcribe, bulldogs-boat-api, cf-route-bootstrap, circuit-breaker, comms-hub, comms-hub-integrator, **gh-push (now auth'd)**, craftsman, wps-hub-v3, kbt-api, sly-app, sly-api, sly-deploy, and ~80 others.
-
-CF Pages (10): bomber-boat-git, carnival-timing (carnivaltiming.com), schoolsportportal, sportcarnival-hub, sportportal, superleague-tipping, wps-staff-hub, bomber-boat (legacy), falkor-app, v0-dental-loyalty-app.
-
-Always re-pull live inventory via `GET https://asgard-tools.pgallivan.workers.dev/admin/projects`.
-
----
-
-## Session history (compressed)
-
-- **Session 1:** v6.5.0 dashboard built with Claude-style chat + 39 hardcoded projects.
-- **Session 2:** patched `get_secret` env-first, bound `GITHUB_TOKEN` to asgard-tools, added `/admin/deploy` and `/admin/projects`, switched to direct GitHub Contents API after `gh-push` broke.
-- **Session 3:** discovered the 49 D1 products were never lost; built D1 product hub (v7.8.1 → v7.8.2). Hit a deployment conflict.
-- **Session 4 (2026-04-27):** consolidated handovers off Drive into this GitHub repo. Drive `*-HANDOVER-EOD.md` files now pointers only.
-- **Session 5 (2026-04-27):** Drive evacuation (R2), Asgard worker stack patched.
-- **Session 6 (2026-04-28):** Portfolio reassessment. Rotated Superleague CF token (invalid). Patched sportportal source Singapore→Sydney. Registered all projects in Asgard D1 (51 rows). Full security audit. gh-push committed with auth fix.
-- **Session 7 (2026-04-28):** **Security hardening.** gh-push bearer auth deployed + GH_PUSH_BEARER secret set on CF worker. kbt-api confirmed live (FAL + Anthropic keys set). Security headers deployed to wps-hub-v3 (all 5). carnivaltiming.com `_headers` deployed but CF Pages blocks X-Frame-Options/HSTS/Permissions-Policy. Real PIN confirmed working (`asgard.pin.v1` in Asgard dashboard localStorage). CF API token fresh from vault for Worker deploys.
+## Files in GitHub
+- `workers/asgard.js` — main dashboard worker (v8.2.0, 2463 lines, ~141KB)
+- `workers/asgard-tools.js` — deploy/patch/admin tools worker (v1.5.3 + validPins fix)
+- `workers/asgard-ai.js` — AI chat worker
+- `.github/workflows/deploy.yml` — push-triggered deploy (has arg-list bug for large workers)
