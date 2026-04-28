@@ -196,3 +196,4 @@ data/
 | 2026-04-28 | v4 | WS shim seq counter, gap detection |
 | 2026-04-28 | v5 | Hibernatable WS, DO alarm TTL, server timestamp for GO |
 | 2026-04-29 | v5+ | Video finish: auto-record, frame scrub, lane picker (1-8), reaction offset, offline fallback |
+| 2026-04-29 | v6 | Auto-detect crossings via pixel diff — finish line zone, 2-pass scan, inline lane assignment, manual fallback |
