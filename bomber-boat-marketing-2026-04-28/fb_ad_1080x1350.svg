@@ -45,17 +45,20 @@
   <g transform="translate(540, 130)" text-anchor="middle">
     <text font-family="Anton, Impact, sans-serif" font-size="100" fill="#ffffff" letter-spacing="-2">BOMBER BOAT</text>
     <line x1="-300" y1="35" x2="300" y2="35" stroke="#cc0000" stroke-width="3"/>
-    <text y="80" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="28" fill="#ffffff" letter-spacing="6">SAIL TO MARVEL  ·  UP THE BOMBERS</text>
   </g>
-  <g transform="translate(540, 320)" text-anchor="middle">
+  <g transform="translate(540, 250)" text-anchor="middle">
+    <text font-family="Anton, Impact, sans-serif" font-size="50" fill="#ffffff" letter-spacing="2">BOMBERS  vs  BRISBANE</text>
+    <text y="46" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="#ffffff" letter-spacing="6">SATURDAY 2 MAY  ·  MARVEL STADIUM</text>
+  </g>
+  <g transform="translate(540, 390)" text-anchor="middle">
     <rect x="-260" y="-50" width="520" height="60" rx="30" fill="url(#gold)"/>
     <text y="-9" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="#0a0a0a" letter-spacing="6">MAIDEN VOYAGE OFFER</text>
-    <text y="120" font-family="Anton, Impact, sans-serif" font-size="135" fill="#ffffff" letter-spacing="-2">SAIL ONCE.</text>
-    <text y="260" font-family="Anton, Impact, sans-serif" font-size="135" fill="url(#red)" letter-spacing="-2">SEE TWICE.</text>
-    <text y="340" font-family="Barlow, sans-serif" font-weight="600" font-size="32" fill="#cccccc">Book Saturday's first sailing —</text>
-    <text y="385" font-family="Barlow, sans-serif" font-weight="800" font-size="36" fill="url(#gold)">your next home game is on us.</text>
+    <text y="115" font-family="Anton, Impact, sans-serif" font-size="125" fill="#ffffff" letter-spacing="-2">SAIL ONCE.</text>
+    <text y="245" font-family="Anton, Impact, sans-serif" font-size="125" fill="url(#red)" letter-spacing="-2">SEE TWICE.</text>
+    <text y="320" font-family="Barlow, sans-serif" font-weight="600" font-size="30" fill="#cccccc">Book Saturday's first sailing  --</text>
+    <text y="362" font-family="Barlow, sans-serif" font-weight="800" font-size="34" fill="url(#gold)">your next home game is on us.</text>
   </g>
-  <g transform="translate(540, 800)" font-family="Barlow, sans-serif" font-weight="700" font-size="24" fill="#ffffff">
+  <g transform="translate(540, 830)" font-family="Barlow, sans-serif" font-weight="700" font-size="24" fill="#ffffff">
     <g>
       <rect x="-470" y="0" width="290" height="56" rx="28" fill="rgba(255,255,255,0.06)" stroke="#cc0000" stroke-width="2"/>
       <text x="-325" y="36" text-anchor="middle">FREE DRINK</text>
@@ -69,10 +72,10 @@
       <text x="325" y="36" text-anchor="middle">CHEAP BAR</text>
     </g>
   </g>
-  <g transform="translate(540, 945)" text-anchor="middle">
+  <g transform="translate(540, 970)" text-anchor="middle">
     <text font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="32" fill="url(#gold)" letter-spacing="4">ONLY 60 SEATS  ·  DEPARTS CAFE RIVIERA</text>
   </g>
-  <g transform="translate(540, 1015)" text-anchor="middle">
+  <g transform="translate(540, 1040)" text-anchor="middle">
     <rect x="-490" y="-30" width="980" height="84" rx="14" fill="url(#red)"/>
     <text y="28" font-family="Anton, Impact, sans-serif" font-size="54" fill="#ffffff" letter-spacing="2">BOMBERBOAT.COM.AU</text>
   </g>
