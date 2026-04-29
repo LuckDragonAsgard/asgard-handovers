@@ -68,5 +68,20 @@ Full brief at `docs/kbt-question-engine-brief.md` in the repo — covers quality
 Test: `GET https://kbt-api.pgallivan.workers.dev/api/generate-slides?event_id=5259`
 Returns `{"ok":true,"slides_url":"...","venue":"The Steam Packet Hotel","slides":2,...}`
 
-### GitHub source sync needed
-`workers/kbt-api.js` in `LuckDragonAsgard/kbt-trivia-tools` is behind — live Worker has 2 fixes not yet in repo. Push `/outputs/kbt-api-patched.js` when convenient.
+## Session update — 2026-04-29 (tool audit + upgrades)
+
+### face-morph-tool.html upgraded to v6 (commit e26e1396)
+- Two-pass morph pipeline: rembg both faces → `fal-morph` x2 in parallel (A+B and B+A) → 50/50 canvas blend → true feature morph
+- Slide A: KBT dark bg, framed morph photo centred with white border + drop shadow
+- Slide B: Face A as cutout sticker (white outline dilation), morph as framed photo, Face B as cutout sticker — all on dark KBT bg
+- **No more:** Easel AI faceswap; gender/workflow dropdowns; transparent output
+
+### brain-tool.html output bg fix (commit 49c2a172)
+- BrainA/BrainB canvases now export with KBT dark gradient background — previously transparent
+
+### workers/kbt-api.js in sync ✅
+Repo source matches live Worker `fb4904ea` — pushed earlier this session (commit ffc41b7a)
+
+### All tools confirmed working ✅
+fact-check · ai-text · fal-morph · fal-faceswap · fal-inpaint · fal-rembg · generate-slides · brain-tool · soundmash-tool · face-morph-tool
+
