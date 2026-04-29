@@ -423,3 +423,46 @@ Full triple-pass audit of ALL KBT apps, tools, workflows, question types, scorin
 - HQ Live: elimination logic, Realtime, timer overlay
 - New Q type UIs: Closest Wins, Connections grid, Emoji display
 - Promote approved candidates → kbt_question table
+
+## Session update — 2026-04-30 (Template discovery + face morph spec rebuild)
+
+### Critical discovery: ALL 7 canvas tools built with wrong template
+The real KBT slide template is WHITE background — not dark. The dark canvas tools all need to be completely rebuilt.
+
+Real template spec (from templates/KBT_Example_Slides.pptx + KBT_Question_Templates.pptx):
+- Background: WHITE always
+- Top-left: R_Q_ label in colored rounded rectangle (white text inside)
+- Question type title next to it in same bold color
+- Content centered with lots of whitespace
+- Cutout sticker photos (rembg, white outline, drop shadow)
+- Solid color bar at very bottom of slide
+- Colors: Brain/Maths=green ~#2ECC71, Brand/Word=sky blue ~#29B6F6, Year=pink ~#CE93D8, Fifty-Fifty=orange ~#FFAB76, MC=purple ~#9575CD
+
+### Mission clarification
+knowbrainertrivia.com.au is the OLD production system. GitHub Pages tools exist to replace graphic designers who currently create all image question slides at high cost. Output must be pixel-perfect to real template — indistinguishable from what the designer produces.
+
+### Face morph correct technique (NOT fal.ai face swap, NOT a split)
+Layered composite with surgical feature erasure:
+1. Place Face B top layer over Face A at 100% opacity
+2. Rotate/translate Face B to align its eyes exactly onto Face A's eyes
+3. Reduce opacity temporarily to check alignment
+4. Pinpoint ALL facial landmarks precisely: each eye centre, each ear, nose tip, mouth corners
+5. Surgically erase from Face B at exact landmark coords: one eye, one ear, nose OR mouth
+6. Restore Face B to 100% opacity — solid composite with mixed features from both
+7. Trim excess with rembg to remove hair, collars, clothing
+8. White border outline + drop shadow on white slide background
+Result: ONE ambiguous face that triggers recognition of both people simultaneously.
+
+### All 7 tools need rebuilding
+- face-morph-tool: white bg, MediaPipe landmark detection, layered composite per spec
+- brain-tool: white bg, green "Name The Brain." label
+- guess-the-year-tool: white bg, pink "Guess The Year." label
+- crack-the-code-tool: white bg, blue label
+- linked-pics-tool: white bg, blue label
+- ghost-actors-tool: white bg
+- soundmash-tool: white bg
+
+### Outstanding
+- View slides 38 and 51 in event 5259 deck for real face morph context
+- Rebuild face-morph-tool with MediaPipe landmark pipeline
+- Rebuild all 7 canvas tools to white template
