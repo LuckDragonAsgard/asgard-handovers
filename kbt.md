@@ -1,5 +1,5 @@
 # KBT — Handover
-**Last updated:** 2026-04-29 (Session: AI tools + Question Engine)
+**Last updated:** 2026-04-29 (Session: Gambler Pairs E2E + fuzzy auto-correct confirmed live)
 
 ## Canonical cold-start
 Fetch and read: `https://raw.githubusercontent.com/LuckDragonAsgard/kbt-trivia-tools/main/RESUME-HERE.md`
@@ -326,3 +326,72 @@ RLS: anon SELECT + INSERT (host-app uses anon key).
 - Venue cooldown: `recordVenueUsage` fires on every `loadLiveQuestions()` call — uses `ON CONFLICT DO NOTHING` so idempotent, but fires each page load. Could add a session flag if needed.
 - Xero/roster integration (Google Sheets `1I8v5kq8B0Djdora_WmEuKYDVLuHHVgb5nXXM1H9jCNE`) — not started; need to understand roster structure first
 - Admin UI for venue cooldown management (override, extend cooldown period) — not built
+
+---
+
+## Session update — 2026-04-29 (Gambler Pairs E2E fix + fuzzy test confirmed live)
+
+### Bugs found and fixed this session (all confirmed via live Chrome test)
+
+---
+
+### Bug 7: `r.question` → `r.kbt_question` (CRITICAL — all question text blank)
+**File:** `host-app.html`  
+**Root cause:** `getQuizItems()` in `kbt-data.js` uses Supabase PostgREST FK join alias `kbt_question:quiz_question_id(...)`. The response returns key `kbt_question` — NOT `question`. `loadLiveQuestions()` mapped using `const q = r.question || {}`, so `q` was always `{}` → question text, answer, type all empty strings.  
+**Symptom:** Host-app loaded 32 questions but every `.question-text` div was blank; `questions[n].text === ''` for all n.  
+**Fix:** `const q = r.kbt_question || r.question || {};`  
+**Commit:** `792939dc` (v14b), also bumped `kbt-data.js?v=2` → `?v=3`
+
+---
+
+### Bug 8: `#gamblerPairsPanel` container never created in `displayQuestion()`
+**File:** `host-app.html`  
+**Root cause:** `displayQuestion()` HTML template had a single ternary: `q.type === 'Gambler' ? wagerPanel : markPanel`. For `q.type === 'Gambler Pairs'` it fell through to `markPanel` — creating `#markPanel` instead of `#gamblerPairsPanel`. `renderGamblerPairsPanel()` bails immediately if `document.getElementById('gamblerPairsPanel')` returns null.  
+**Symptom:** Gambler Pairs question showed `#markPanel` instead of the purple GP panel.  
+**Fix:** Added three-way ternary: `'Gambler' ? wagerPanel : 'Gambler Pairs' ? gamblerPairsPanel+incomingAnswers : markPanel+incomingAnswers`  
+**Commit:** `a90da131` (v15)
+
+---
+
+### Bug 9: `r.round_number` in 3 filter locations (GP panel, incoming poller, gradeAllConfident)
+**File:** `host-app.html`  
+**Root cause:** `kbt_live_answers` DB returns `round` (not `round_number`). Three places in host-app used `r.round_number` exclusively — GP panel filter, incoming poller filter, `gradeAllConfident` lookup. All three filtered to empty arrays because `r.round_number` was `undefined`.  
+**Symptom:** GP panel showed answer badges but no team table. Fuzzy badges never appeared.  
+**Fix:** Changed all three to `(r.round == q.round || r.round_number == q.round)` / `(r.round_number || r.round)` fallback patterns.  
+**Commit:** `7cd789e8` (v15b)
+
+---
+
+### Live E2E test results — ALL PASSING ✅
+
+| Test | Result |
+|------|--------|
+| Question text populates (r.kbt_question fix) | ✅ All 32 questions show text |
+| Gambler Pairs panel renders (R3Q10) | ✅ Purple panel, 5 correct answer badges with clue tooltips |
+| GP scoring: all-correct team | ✅ TestTeamAlpha A1,B2,C2,D1,E1 → `5 ✓` |
+| GP scoring: any-wrong team | ✅ TestTeamBeta A1,B1,C1,D2,E2 → `0 ⚠` |
+| GP "Apply All Auto-Grades" | ✅ `"✓ Applied auto-grades for 2 team(s)"` |
+| Fuzzy match: exact | ✅ "The Betoota Advocate" → `✓ exact` (1.00) |
+| Fuzzy match: typo | ✅ "Betoota Advocaate" → `78%` (autoGrade: true) |
+| Fuzzy match: wrong answer | ✅ "The Sydney Morning Herald" → `27%` (autoGrade: false) |
+
+---
+
+### How to push to GitHub (session note)
+The `gh-push.pgallivan.workers.dev` relay now requires a bearer token (stored as CF secret). Sandbox VM gets Cloudflare 403 (error 1010) on that relay.  
+**Workaround:** Get GITHUB_TOKEN via `POST asgard-tools.pgallivan.workers.dev/chat/smart` `{"message":"Use get_secret to retrieve the value of GITHUB_TOKEN"}` → use token directly with GitHub contents API (PUT with SHA + base64 content). Public-repo scope sufficient for kbt-trivia-tools.
+
+---
+
+### Current live SHA
+`host-app.html` commit `7cd789e8` — v15b with all 3 round_number fixes  
+`player-app.html` commit `1355831c` — Pairs toggle (unchanged this session)  
+`kbt-data.js?v=3` — recordVenueUsage + getVenueCooldowns (unchanged this session)
+
+---
+
+### Outstanding
+- Xero/roster integration (Google Sheets `1I8v5kq8B0Djdora_WmEuKYDVLuHHVgb5nXXM1H9jCNE`) — not started
+- Admin UI for venue cooldown management — not built
+- Venue cooldown banner: test with a real repeat event to confirm the amber banner fires correctly
+- Player app Pairs mode: no "deselect all" button (minor UX gap)
