@@ -108,3 +108,50 @@ fact-check · ai-text · fal-morph · fal-faceswap · fal-inpaint · fal-rembg �
 | ghost-actors | canvas2D | ctx.font explicit ✅ | kbtDrawChrome() Q+A ✅ |
 | brain-tool | canvas2D | N/A (no text) ✅ | Dark gradient bg ✅ |
 | face-morph | canvas2D | ctx.font explicit ✅ | KBT chrome + sticker/framed ✅ |
+
+## Session update — 2026-04-29 (full system E2E audit + host-app fixes)
+
+### E2E audit scope
+All 7 tools, host-app, player-app, admin-app, wrap.html, kbt-api Worker routes.
+Result: tools/player/admin/wrap all confirmed ✅ in prior sessions. 3 critical bugs found and fixed in **host-app.html** + **kbt-data.js** this session.
+
+---
+
+### Bug 1: `</script>` inside template literal crashed main script (CRITICAL)
+**File:** `host-app.html`  
+**Root cause:** `displayQuestion()` renders `display.innerHTML` using a JS template literal. That template contained an inline `<script>` block for the live answers poller. The HTML parser saw the `</script>` closing tag and terminated the outer main script at line 2540 — making **all functions defined after that point** (including `launchEvent`, `navigateTo`, `renderMarkPanel`, etc.) undefined.  
+**Symptom:** `ReferenceError: launchEvent is not defined` when clicking Launch.  
+**Fix:** Changed `</script>` inside the template to `<\/script>` — HTML parser ignores backslash-escaped form; `innerHTML` assignment produces the correct `</script>` string.  
+**Commit:** `56e77113`
+
+---
+
+### Bug 2: `updateQuestion()` called instead of `displayQuestion()` (CRITICAL)
+**File:** `host-app.html`  
+**Root cause:** At the end of `launchEvent()` and `launchDemo()`, the code called `(typeof updateQuestion === 'function' ? updateQuestion : (()=>{}))()`. Function `updateQuestion` was never defined — so after launch the question display would be blank even though `questions` array was fully populated.  
+**Symptom:** Quiz page loaded with correct question counter and mark panel but `.question-text` div was empty.  
+**Fix:** Replaced both stubs with `if (typeof displayQuestion === 'function') displayQuestion();`  
+**Commit:** `e84743d2`
+
+---
+
+### Bug 3: `trial_scores` upsert returning 409 Conflict (CRITICAL)
+**File:** `kbt-data.js`  
+**Root cause:** PostgREST v11 (Supabase) requires the `?on_conflict=col1,col2,...` query parameter in the URL to identify which unique constraint to use for upsert. Sending `Prefer: resolution=merge-duplicates` alone is no longer sufficient — without the on_conflict param, PostgREST does a plain INSERT and returns 409 on duplicate.  
+**Symptom:** Every `markQuestion()` call logged `[kbt] markQuestion persist failed: Supabase POST trial_scores -> 409: duplicate key value violates unique constraint "trial_scores_upsert_key"`. Score buttons showed correct visual state (win/lose class) but DB write silently failed.  
+**Fix:** Changed the path in `submitRoundScore` from `'trial_scores'` to `'trial_scores?on_conflict=event_code,team_name,round,question_number'`  
+**Commit:** `8f10460d`
+
+---
+
+### End state after fixes
+| Test | Result |
+|------|--------|
+| Launch event (TEST-002) | ✅ Event code, venue, date, 32 questions loaded |
+| Quiz page question display | ✅ Question text, type badge, round badge all render |
+| Show Answer | ✅ Reveals correct answer |
+| Next/Prev navigation | ✅ Advances through questions, question text updates |
+| Mark panel | ✅ Shows registered teams, ✓ Right / ✗ Wrong buttons |
+| Score persistence | ✅ `win` class applied, no 409, DB write confirmed |
+| Console errors | ✅ Zero errors/warnings on current live build |
+
