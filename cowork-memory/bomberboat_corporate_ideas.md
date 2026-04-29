@@ -1,14 +1,11 @@
 ---
 name: Bomber Boat corporate ideas
-description: Corporate/partnership strategy for Bomber Boat — EFC, corporate Friday nights, Yarra Cruises, beer sponsorship
+description: EFC partnership ($15-20k/yr), corporate Friday nights, Yarra Cruises fleet, beer sponsorship
 type: project
 ---
-**Corporate Friday night boats** — charter the whole boat for corporate groups. Friday evening sailing as a team outing. Target: Maribyrnong/Footscray/CBD businesses.
+Do NOT let these fall out of the handover again.
 
-**Essendon Football Club official partnership** — approach EFC directly for a yearly deal (~$15-20k/year). EFC officially endorses/promotes Bomber Boat to members.
-
-**Yarra Cruises fleet** — 4 big boats. Potential partnership or capacity agreement to scale up beyond Bomber Boat's single vessel.
-
-**Beer/beverage sponsorship** — approach a beer brand (Carlton, Great Northern, Pure Blonde) to sponsor the boat — branding on board, subsidised bar prices, co-marketing.
-
-**Why:** These are high-leverage revenue and growth plays. The EFC partnership could be transformative — draft EFC email next session when Paddy asks.
+1. **Corporate Friday night boats** — charter whole boat for corporate groups. Target Maribyrnong/Footscray/CBD businesses.
+2. **EFC official partnership** — approach EFC for ~$15-20k/year deal. Official endorsement to members. Draft email next time Paddy asks.
+3. **Yarra Cruises fleet** — 4 big boats. Partnership/capacity agreement to scale beyond single vessel.
+4. **Beer/beverage sponsorship** — Carlton, Great Northern, Pure Blonde. Branding on board, subsidised bar, co-marketing.
