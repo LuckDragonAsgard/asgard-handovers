@@ -155,3 +155,61 @@ Result: tools/player/admin/wrap all confirmed ✅ in prior sessions. 3 critical 
 | Score persistence | ✅ `win` class applied, no 409, DB write confirmed |
 | Console errors | ✅ Zero errors/warnings on current live build |
 
+
+## Session update — 2026-04-29 (full E2E audit continued — incoming answers + host-app poller fix)
+
+### Scope this session
+Completed full end-to-end audit of player→host live answer flow, gambler scoring, scoring page, teams page, results/podium, timer, and wrap.html. Three additional bugs found and fixed.
+
+---
+
+### Bug 4: `kbt-data.js` cached in host-app (no version query on script tag)
+**File:** `host-app.html`  
+**Root cause:** `player-app.html` had `<script src="kbt-data.js?v=2">` (added earlier session) to bust GH Pages cache, but `host-app.html` still loaded `<script src="kbt-data.js">` with no version. Browser served the old cached version — missing `submitPlayerAnswer`, `getLiveAnswers`, `gradeLiveAnswer` methods on `window.kbtData`.  
+**Symptom:** Host `window.kbtData.getLiveAnswers` was `undefined`, incoming answers panel showed 0 forever.  
+**Fix:** Changed to `<script src="kbt-data.js?v=2"></script>`.  
+**Commit:** `2a508e93`
+
+---
+
+### Bug 5: Incoming answers poller `<script>` inside `innerHTML` never executed
+**File:** `host-app.html`  
+**Root cause:** `displayQuestion()` injects the incoming answers panel HTML (including `<script>` block with `setInterval` poller) via `display.innerHTML = ...`. Browsers do **not** execute `<script>` tags injected via `innerHTML` — this is a hard browser security rule. The poller `setInterval` was never registered, so the panel stayed at 0 regardless.  
+**Symptom:** `getLiveAnswers()` called manually returned correct rows; panel never updated.  
+**Fix:**  
+1. Removed the `<script>` block from the template literal entirely  
+2. Added `startIncomingPoller()` as a real JS function (with `_incomingPollerStarted` guard so it starts only once), containing the poll logic + `window.gradeIncoming` + `setInterval`  
+3. Called `startIncomingPoller()` from `displayQuestion()` after setting innerHTML  
+**Commit:** `f3cf33f3`
+
+---
+
+### Bug 6: `kbt_live_answers` table missing UPDATE RLS policy
+**Database:** Supabase `huvfgenbcaiicatvtxak`  
+**Root cause:** `kbt_live_answers` had RLS policies for INSERT (anon) and SELECT (anon) but no UPDATE policy. `gradeLiveAnswer()` used anon key to PATCH — Supabase silently returned `[]` (0 rows updated) due to RLS blocking the update.  
+**Symptom:** `gradeIncoming()` returned `[]`, graded answers didn't disappear from the host panel.  
+**Fix:** `CREATE POLICY anon_update_live_answers ON kbt_live_answers FOR UPDATE TO anon USING (true) WITH CHECK (true);`  
+**Applied via:** Supabase MCP `execute_sql`
+
+---
+
+### Full E2E test results — ALL PASSING ✅
+
+| Feature | Result |
+|---------|--------|
+| Player submits answer → appears in host panel | ✅ Within 3s poller cycle |
+| Host grades ✓ → row updated, clears from panel | ✅ |
+| Host grades ✗ → same | ✅ |
+| Scoring page (navigateTo → renderScoreTable) | ✅ Teams + round scores + totals |
+| Teams page | ✅ Team list, captains, player counts |
+| Results/podium (showLeaderboard) | ✅ Podium + full leaderboard rendered |
+| Gambler wager panel renders | ✅ Banner, per-team inputs, lock button |
+| lockGamblerWagers → DB write + score delta | ✅ 2 teams updated, +5/-3 applied |
+| Timer countdown | ✅ setInterval running, timerDisplay counting |
+| wrap.html with real team code | ✅ Full render: placement, rounds, members, top 3 |
+
+### Notes for next session
+- `navigateTo('results')` alone does NOT render the podium — call `showLeaderboard()` instead
+- wrap.html `?team=` expects the team **code** (e.g. `TFR4PFF`), not team name
+- "Gambler Pairs" question type in DB does NOT trigger wager panel — only type string `"Gambler"` does. Add a type mapping in `loadLiveQuestions` if Gambler Pairs events need wager UI.
+- Test data in DB: "Live Test Team" (code TFR4PFF) and graded `kbt_live_answers` rows for TEST-002 — fine to leave or clean up as desired
