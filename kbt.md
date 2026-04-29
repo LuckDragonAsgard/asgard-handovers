@@ -213,3 +213,116 @@ Completed full end-to-end audit of player→host live answer flow, gambler scori
 - wrap.html `?team=` expects the team **code** (e.g. `TFR4PFF`), not team name
 - "Gambler Pairs" question type in DB does NOT trigger wager panel — only type string `"Gambler"` does. Add a type mapping in `loadLiveQuestions` if Gambler Pairs events need wager UI.
 - Test data in DB: "Live Test Team" (code TFR4PFF) and graded `kbt_live_answers` rows for TEST-002 — fine to leave or clean up as desired
+
+---
+
+## Session update — 2026-04-29 (Gambler Pairs UI + fuzzy auto-correct + venue cooldown)
+
+### Features built this session
+
+---
+
+### Feature 1: Gambler Pairs host-app panel (purple UI)
+**Files:** `host-app.html` (v10→v12), `kbt-data.js`
+
+**What it does:**
+- `quiz_qtype = 'Gambler Pairs'` now correctly maps to type `'Gambler Pairs'` (was falling through to `'Gambler pairs'` — lowercase p)
+- A dedicated purple panel (`#gamblerPairsPanel`) replaces the old wager panel for this type
+- Panel header shows all 5 pair correct answers (A1, B2, etc.) with full text from `question_answer_supporttext`
+- Team submissions parsed from `selected_option` — accepts comma or space separated e.g. `A1,B2,C2,D1,E1`
+- Per-team table: each pair cell coloured green (correct) or red (wrong)
+- Auto-score: N correct pairs if 0 wrong; 0 if any wrong (all-or-nothing)
+- Per-row override input + Apply button; "Apply All Auto-Grades" bulk button
+- Panel refreshes every 3s via existing incoming poller
+
+**DB format confirmed:**
+- `question_answer_text`: `A1)\nB2)\nC2)\nD1)\nE1)` — correct option per pair
+- `question_answer_supporttext`: `A1) Sherlock Holmes\nB2) Durian\n...` — full answer text
+- `quiz_qtype` literal value: `"Gambler Pairs"`
+
+**Key functions added:**
+- `parseGamblerPairsAnswers(answerText)` → `{ A:'1', B:'2', … }`
+- `parseTeamPairsSelection(text)` → parses any reasonable format
+- `calcGamblerPairsScore(teamSel, correct)` → `{ score, correct, wrong, details }`
+- `renderGamblerPairsPanel(q)` — async, fetches live answers + renders
+- `applyGamblerPairsScore(answerId)` — apply one team's score
+- `applyAllGamblerPairs(round, qNum)` — bulk apply auto-grades
+
+---
+
+### Feature 2: Gambler Pairs player-app toggle mode
+**File:** `player-app.html`
+
+**What it does:**
+- "🃏 Pairs mode" button in the answer card header toggles between text area and 5-pair toggle UI
+- 5 pair buttons: A/B/C/D/E each with Option 1 and Option 2 (green when selected, toggle off on second click)
+- Submit formats selections as `A1,B2,C2,D1,E1` — exactly what the host-app parser expects
+- Auto-increments Q# after submit
+
+---
+
+### Feature 3: Fuzzy auto-correct in incoming answers panel
+**File:** `host-app.html` (v11)
+
+**What it does:**
+- `levenshtein(a, b)` — character-level edit distance (strips non-alphanumeric, lowercases)
+- `fuzzyMatch(submitted, correct)` → `{ score, label, color, autoGrade }`
+  - `score >= 0.8` or contained match → green badge `"✓ exact"` / `"95%"`, `autoGrade: true`
+  - `score 0.6–0.8` → amber badge, no auto-grade
+  - `score < 0.6` → red badge
+- `findCorrectAnswer(round, qNum)` looks up correct answer from loaded `questions` array
+- Each incoming answer row now shows a coloured confidence badge + the ✓ button is highlighted (ring glow) when auto-gradeable
+- "⚡ Auto-grade N confident answer(s)" button appears above the panel when high-confidence matches exist
+- `gradeAllConfident()` iterates all ungraded rows, grades those with `fm.autoGrade === true` as correct
+
+---
+
+### Feature 4: Question venue cooldown tracking (2-year rule)
+**DB:** Supabase `huvfgenbcaiicatvtxak`  
+**Files:** `kbt-data.js`, `host-app.html` (v12)
+
+**Schema (migration `fix_question_venue_usage_types_and_cooldown`):**
+```sql
+kbt_question_venue_usage (
+  id bigserial PK,
+  question_id bigint NOT NULL,
+  loc_id      bigint NOT NULL,   -- kbt_loc.id
+  event_id    bigint NOT NULL,   -- kbt_event.id
+  used_on     date DEFAULT CURRENT_DATE,
+  slot        text,              -- e.g. "R3Q10"
+  UNIQUE (question_id, loc_id, event_id)
+)
+-- View:
+kbt_question_venue_cooldown: question_id, loc_id, last_used, days_ago, in_cooldown (bool, 2yr)
+```
+RLS: anon SELECT + INSERT (host-app uses anon key).
+
+**kbt-data.js new methods:**
+- `recordVenueUsage(eventCode, questions)` — batch inserts with `resolution=ignore-duplicates`; fetches `event_location_id` from `kbt_event` first
+- `getVenueCooldowns(questionIds, locId)` — queries the view, returns cooldown rows
+
+**host-app.html:**
+- `loadLiveQuestions()` now: records venue usage in background + calls `loadVenueCooldowns()`
+- `loadVenueCooldowns()` populates `_venueCooldownSet` (Set of question dbIds)
+- `displayQuestion()` shows amber warning banner: `⚠️ This question was used at this venue within the last 2 years`
+- Mapped question objects now include `dbId: r.quiz_question_id`
+
+---
+
+### Commits this session
+| File | SHA | Description |
+|------|-----|-------------|
+| `host-app.html` | `5b973d1a` | Gambler Pairs panel v10 |
+| `player-app.html` | `1355831c` | Pairs toggle mode |
+| `host-app.html` | `35119b9b` | Fuzzy auto-correct v11 |
+| `kbt-data.js` | `b1fb38e0` | recordVenueUsage + getVenueCooldowns |
+| `host-app.html` | `f814634a` | Venue cooldown warning v12 |
+
+---
+
+### Still to do / known gaps
+- Gambler Pairs is not yet tested end-to-end with a live event (need an event with a GP question)
+- Player app Pairs mode sets selections but there's no "deselect all" button — minor UX gap
+- Venue cooldown: `recordVenueUsage` fires on every `loadLiveQuestions()` call — uses `ON CONFLICT DO NOTHING` so idempotent, but fires each page load. Could add a session flag if needed.
+- Xero/roster integration (Google Sheets `1I8v5kq8B0Djdora_WmEuKYDVLuHHVgb5nXXM1H9jCNE`) — not started; need to understand roster structure first
+- Admin UI for venue cooldown management (override, extend cooldown period) — not built
