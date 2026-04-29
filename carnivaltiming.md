@@ -3,7 +3,7 @@
 **Live:** https://carnivaltiming.com  
 **CF Pages project:** `carnival-timing` (Luck Dragon Main `a6f47c17811ee2f8b6caeb8f38768c20`)  
 **WS Worker:** `carnival-timing-ws` → https://carnival-timing-ws.pgallivan.workers.dev  
-**Current version:** v8.2 (deployed 2026-04-29)  
+**Current version:** v8.2.2 (deployed 2026-04-29)  
 **Frontend source:** fetch from live site each session (no Drive/GitHub copy)  
 **Worker source:** recreate from this handover each session (ephemeral)
 
@@ -130,6 +130,8 @@ Cloudflare Durable Object worker. `CarnivalRoom` DO:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v8.2.2 | 2026-04-29 | Added `--border: #30363d` to `:root` CSS (was referenced in 12 inline templates but never declared) |
+| v8.2.1 | 2026-04-29 | Replaced blocking `confirm()` in `_offerSetPin` with custom offer-pin-modal (fixes CDP/browser freeze) |
 | v8.2 | 2026-04-29 | DQ flags per lane, heat picker on publish, admin PIN, CSV export fix |
 | v8.1 | 2026-04-29 | Observer auto-join fix, initResultsView fix, showSharePage fix |
 | v8 | 2026-04-29 | Swim mode video finish (per-lane strip), XC bib pending queue, seed/demo URL params |
