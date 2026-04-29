@@ -1,67 +1,66 @@
-# SportPortal — EOD Handover (Session 13, 2026-04-29)
+# SportPortal — Session 13 EOD (2026-04-29)
 
-## TL;DR
-All 5 WPS sport URLs are now live and serving correct content. Root cause: old Worker Routes on both zones were intercepting all requests before CF Pages could handle them. Both deleted. All 5 URLs verified ✅.
+## Status: ALL GREEN
 
-## Session 13 — what got done
+All 4 domains confirmed live:
+- sportportal.com.au ✅ 200
+- schoolsportportal.com.au ✅ 200 (all demo routes working, Worker Route set)
+- sportcarnival.com.au ✅ 200
+- carnivaltiming.com ✅ 200
 
-### ✅ Root cause found and fixed — Worker Routes blocking CF Pages
-Both `schoolsportportal.com.au` and `sportcarnival.com.au` zones had Worker Routes that intercepted every request before it reached CF Pages:
+Pitch deck: github.com/LuckDragonAsgard/schoolsportportal/blob/main/docs/sportportal-pitch.docx
 
-| Zone | Route | Old Worker | Fix |
-|---|---|---|---|
-| schoolsportportal.com.au | `schoolsportportal.com.au/*` | `schoolsportportal` | Route deleted via CF API |
-| sportcarnival.com.au | `sportcarnival.com.au/*` | `sportportal` | Route deleted via CF API |
+## Session 13 deliverables
 
-The `pages.dev` URLs always worked because they bypass the zone proxy entirely.
-
-### ✅ Cache purged
-- `sportcarnival.com.au` zone cache purged (`purge_everything: true`) — zone ID `796f639e769fefac582a9e4b104dd98d`
-- `schoolsportportal.com.au` cache already purged in Session 12
-
-### ✅ sportcarnival-hub CF Pages deploy
-Deployed correct content to `sportcarnival-hub` CF Pages project (deployment `158959ae`) with all WPS athletics/swimming files in prior session.
-
-## All 5 URLs — verified working 2026-04-29
-
-| URL | Title |
-|---|---|
-| schoolsportportal.com.au/williamstownps | Williamstown Primary School — School Sport Portal ✅ |
-| schoolsportportal.com.au/williamstowndistrict | Williamstown District Sport ✅ |
-| schoolsportportal.com.au/hobsonsbaydivision | Hobsons Bay Division — School Sport Portal ✅ |
-| sportcarnival.com.au/williamstownps/athletics.html | WPS Athletics Carnival — SportCarnival ✅ |
-| sportcarnival.com.au/williamstownps/swimming.html | WPS Swimming Carnival — SportCarnival ✅ |
+- GitHub token rotated: LuckDragonAsgard PAT (no expiry, repo scope) saved to vault as GITHUB_TOKEN
+- Pitch deck pushed to LuckDragonAsgard/schoolsportportal/docs/sportportal-pitch.docx
+- Exposed Discord webhook DELETED via API (was live ~40 min after accidental push to asgard-handovers)
+- cowork-memory/identity.md scrubbed of webhook URL (both in GitHub and local memory)
+- Vault DISCORD_WEBHOOK_ASGARD marked REVOKED — create new webhook in Discord server settings
+- Asgard D1 updated: sport-carnival status active, infra_state all-green, pitch_documents → GitHub, schoolsportportal github_repo → LuckDragonAsgard
 
 ## Architecture (current as of 2026-04-29)
 
-| Domain | CF Pages project | Zone ID |
+All 4 domains live on Luck Dragon Main CF account (a6f47c17811ee2f8b6caeb8f38768c20):
+
+| Domain | CF Pages project | NS pair |
 |---|---|---|
-| schoolsportportal.com.au | `schoolsportportal` | `7cbd90f8acd552a3bafc3d221878f108` |
-| sportcarnival.com.au | `sportcarnival-hub` | `796f639e769fefac582a9e4b104dd98d` |
-| sportportal.com.au | `sportportal` | — |
-| carnivaltiming.com | `carnival-timing` | — |
+| sportportal.com.au | sportportal | coraline + renan |
+| schoolsportportal.com.au | schoolsportportal | coraline + renan |
+| sportcarnival.com.au | (auto-attached) | (CF) |
+| carnivaltiming.com | carnival-timing | liv + quinton |
 
-All zones in Luck Dragon (Main) account `a6f47c17811ee2f8b6caeb8f38768c20`.
+Worker Routes (zone-level, set via CF dashboard):
+- schoolsportportal.com.au/* → schoolsportportal worker ✅
+- sportcarnival.com.au/* → sportportal worker ✅
 
-**Deploy method:** CF Pages direct upload via wrangler (no GitHub integration — push to GitHub does NOT trigger deploy).
-
-## CF Pages projects — current deployments
-
-| Project | Canonical deployment | Source repo |
-|---|---|---|
-| schoolsportportal | `4cbb475a` | LuckDragonAsgard/schoolsportportal |
-| sportcarnival-hub | `158959ae` | LuckDragonAsgard/sportcarnival-hub |
+Firebase: willy-district-sport, australia-southeast1, SDK v9.23.0 compat
 
 ## Key facts
+
 - VentraIP account #45838174: sportportal.com.au, schoolsportportal.com.au
 - sportcarnival.com.au registrar: Tucows/OpenSRS
-- Stripe: Google sign-in with pat_gallivan@hotmail.com
-- Sport Portal Drive folder: `1SVbCqDwD7AztVXmijffRTPdCi_JoGQr6`
-- Firebase project: `willy-district-sport` (australia-southeast1)
+- carnivaltiming.com: CF Registrar
+- Stripe: pat_gallivan@hotmail.com (NOT paddy@luckdragon.io)
+- CF account: a6f47c17811ee2f8b6caeb8f38768c20 (Luck Dragon Main)
+- Firebase: willy-district-sport
+- GitHub repos: LuckDragonAsgard/schoolsportportal (primary), PaddyGallivan/sportportal
+- GitHub token in vault: LuckDragonAsgard account PAT (GITHUB_TOKEN)
 
-## BLAKE3 hash formula (for future CF Pages deploys)
-`blake3(base64(fileContent) + fileExtension).hex.slice(0, 32)`
-Wrangler used from `/tmp` with `npm_config_cache=/tmp/npm-cache HOME=/tmp/wrangler-home`.
+## Asgard D1 — SportPortal facts (all populated)
 
-## Outstanding
-- None from this session. All 5 URLs verified working.
+- sportportal:cost_model_figures — $8.36M breakdown by role
+- sportportal:real_pricing — $1/student/yr, District $150, Division $250, Region $500
+- sportportal:revenue_projections_5yr — Year 1 ~$32k → Year 5 ~$367-500k ARR
+- sportportal:hours_per_role — PE 51hrs/yr, District 112.5hrs/yr, Division 133.5hrs/yr
+- sportportal:email_catalog — 33 email types across 9 categories
+- sportportal:external_stakeholders — 6 stakeholder categories
+- sportportal:transport_cascade — 8 docs per school per carnival
+- sportportal:ssv_structure — 1,600 schools, 232 districts, 55 divisions, 16 regions
+
+## Outstanding (action required)
+
+- Create new Discord webhook in server settings → save URL to vault as DISCORD_WEBHOOK_ASGARD
+- ASIC Form 484 (Corporate Key) — postal letter ETA ~2026-05-02
+- info@sportportal.com.au email — not done
+- Paddys own pages: /hobsonsbay and /williamstowndistrict not yet built
