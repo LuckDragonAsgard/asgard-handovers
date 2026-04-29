@@ -56,3 +56,17 @@ Full brief at `docs/kbt-question-engine-brief.md` in the repo — covers quality
 - New question type UIs in host-app (Closest Wins input, Connections grid, Emoji display)
 - Promote approved candidates → `kbt_question` table (admin button in question-candidates.html)
 - fal-rembg CDN issue — monitor, raise with fal.ai support if persistent
+
+## Session update — 2026-04-29 (generate-slides fixed)
+
+### Bug fixes deployed (live hash: `fb4904ea`)
+1. **`generate-slides` crash guard** — added guard after `createRes.json()`: `if (!pres.presentationId) return json({error:'Slides API failed',details:pres},500)`. Was crashing with `Cannot read properties of undefined` on any Slides API error.
+2. **`accentBar` zero-weight outline** — `updateShapeProperties` had `weight: { magnitude: 0, unit: 'PT' }` which Google Slides API rejects (`INVALID_ARGUMENT`). Removed `outline` clause; shapes now only set `shapeBackgroundFill`.
+3. **Google Slides API re-enabled** — GCP project `bubbly-clarity-494509-g0` had Slides API disabled. Re-enabled 2026-04-29 via GCP console (`paddy@luckdragon.io`).
+
+### generate-slides now confirmed working ✅
+Test: `GET https://kbt-api.pgallivan.workers.dev/api/generate-slides?event_id=5259`
+Returns `{"ok":true,"slides_url":"...","venue":"The Steam Packet Hotel","slides":2,...}`
+
+### GitHub source sync needed
+`workers/kbt-api.js` in `LuckDragonAsgard/kbt-trivia-tools` is behind — live Worker has 2 fixes not yet in repo. Push `/outputs/kbt-api-patched.js` when convenient.
