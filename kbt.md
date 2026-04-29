@@ -395,3 +395,31 @@ The `gh-push.pgallivan.workers.dev` relay now requires a bearer token (stored as
 - Admin UI for venue cooldown management — not built
 - Venue cooldown banner: test with a real repeat event to confirm the amber banner fires correctly
 - Player app Pairs mode: no "deselect all" button (minor UX gap)
+
+## Session update — 2026-04-29 (Triple-pass audit + 2 fixes)
+
+### Scope
+Full triple-pass audit of ALL KBT apps, tools, workflows, question types, scoring mechanisms, and business models.
+
+### Bug 9d — gradeAllConfident missing round fallback (FIXED)
+`window.gradeAllConfident` closure had unfixed `findCorrectAnswer(r.round_number, ...)`. Fix: `r.round_number || r.round`. Commit `20e57f3b`. Verified live ✅.
+
+### Bug P3-1 — nextBtn not disabled at last question (FIXED)
+`displayQuestion()` never set `nextBtn.disabled`. Fix: `nextBtn.disabled = currentQuestion === questions.length - 1`. Commit `7dd858ea`. Current host-app SHA: `7dd858eac11c`.
+
+### Audit results — ALL ✅
+- Pass 1 source: host-app, player-app, admin-app, wrap, kbt-data.js, kbt-api worker, question-candidates, slides-export, all 7 media tools
+- Pass 2 live: launchEvent/revealAnswer/gradeAllConfident verified, wrap placement messages, kbt-api live AI + fact-check
+- Pass 3 edge cases: GP mode, wrap tiers, submitRoundScore upsert, gradeAllConfident on empty, invalid event code, generate-slides 500
+
+### Business model status
+- Live Model ✅ Ship-ready
+- Demo/Offline ✅ launchDemo() working
+- Weekly School ⚠️ Designed only (brief at docs/kbt-question-engine-brief.md)
+- HQ Live/No-Host ⚠️ Designed only
+
+### Outstanding (post-launch roadmap)
+- Weekly School format UI + event_type='school' player app
+- HQ Live: elimination logic, Realtime, timer overlay
+- New Q type UIs: Closest Wins, Connections grid, Emoji display
+- Promote approved candidates → kbt_question table
