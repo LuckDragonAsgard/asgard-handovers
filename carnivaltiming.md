@@ -53,90 +53,90 @@ Key design decisions:
 | `starter` | GO button only |
 | `timer` | Live clock, shows recalled/live/done state |
 | `results` | Live results board |
-| `marshal` | XC Marshal — tap-to-record finishers |
+| `marshal` | XC Marshal — tap-to-record finishers with bib numpad |
 | `xc-admin` | XC Race Control |
-| `video-finish` | Camera capture + frame-accurate finish marking |
+| `video-finish` | Camera capture + auto-detect finish crossings |
 | `share` | QR code join page |
 
 ---
 
-## Video Finish Feature (v5+)
+## Video Finish Feature (v8)
 
-Auto-starts recording when race goes LIVE. Operator stands at the finish line pointing camera across it.
+Auto-starts recording when race goes LIVE. Two modes:
 
-**Flow:**
-1. Enter Video Finish role → rear camera opens
-2. Race GOes → recording starts automatically (server-synced)
-3. Finish → tap "Stop & Review"
-4. Scrub frame-by-frame (‹ › = 1 frame = 1/60s)
-5. Tap "Mark Athlete at This Frame" → lane picker appears (lanes 1–8)
-6. Select lane → mark saved with `{ lane, place, elapsedMs }`
-7. Place order auto-assigned by elapsed time
-8. "Publish Times" → writes to `race/current/videoFinish.marks`
+### Swim Mode (end-wall camera)
+Camera points at pool end-wall, capturing all lanes in one shot.
+Each lane = a distinct vertical column. No lane labelling needed.
+- Set lane count (4/6/8/10) before recording
+- After stop → auto-scan detects FIRST crossing per lane
+- Per-lane baseline calibrated from first 1.5s of video
+- Threshold = max(6, baseline × 3.5)
+- Two-pass: rough scan at 100ms, then 1/60s refinement ±0.3s around peak
+- Results show lane + place + elapsed time
 
-**Time calculation:**
+### Track / XC Mode (finish-line camera)
+Camera points across finish line. Whole-frame pixel diff detects each athlete.
+- Auto-calibrate threshold from first 1.5s baseline
+- Rough scan at 100ms, min 0.5s gap between events
+- Refine ±0.35s at 1/60s steps
+- Results show place + elapsed time (no lanes)
+
+### Offline Fallback
+If no WS connection after 3s, banner shows.
+Elapsed = `video.currentTime * 1000 - offsetMs`.
+
+### Reaction Offset
+Default 75ms. Accounts for GO→record-start lag.
+
+**Time formula:**
 ```
 elapsedMs = (vfRecStartServerMs + video.currentTime * 1000) - vfRaceStartMs - offsetMs
 ```
 
-**Offline fallback:** if no WS connection after 3s, banner shows. Operator taps Record at GO manually.
-Elapsed = `video.currentTime * 1000 - offsetMs`
+**Published to:** `race/current/videoFinish.marks`
 
-**Reaction offset:** configurable input (default 75ms). Accounts for GO→record-start lag.
+---
 
-**Data published:**
+## XC Marshal (v8)
+
+Fully non-blocking tap flow:
+1. Tap "TAP FINISH" button at top → time recorded immediately, client-gen key written to DB
+2. Bib numpad slides up at bottom (doesn't cover tap button)
+3. Enter bib digits → Confirm (or Skip)
+4. Queue (`bibPendingQueue`) handles burst taps — next bib auto-shows after confirm
+
 ```js
-race/current/videoFinish: {
-  marks: { [lane]: { lane, place, elapsedMs } },
-  offsetMs,
-  offlineMode,
-  recordedBy,
-  publishedAt
-}
+const key = myId.slice(0,4) + '-' + Date.now().toString(36); // client-gen key
+await cRef(`xc/current/finishes/${key}`).set({ marshalId, bib:'', elapsedMs, tapAt });
 ```
 
 ---
 
 ## Deploy Commands
 
-### Frontend (CF Pages) — Direct API (wrangler times out in sandbox)
-```python
-import urllib.request, json, hashlib
+### Frontend (CF Pages) — use `requests` library, NOT urllib multipart
 
-TOKEN   = "<from asgard-tools get_secret CF_API_TOKEN>"
+```python
+import hashlib, json, requests
+
+TOKEN   = "cfut_..."   # from ASGARD_VAULT KV → CF_API_TOKEN
 ACCOUNT = "a6f47c17811ee2f8b6caeb8f38768c20"
 PROJECT = "carnival-timing"
 
-with open('index.html', 'rb') as f:
-    content = f.read()
-file_hash = hashlib.sha256(content).hexdigest()
-boundary = "----CFDirect9abc"
-CRLF = b'\r\n'
+with open("ct-fix.html", "rb") as f:
+    file_data = f.read()
+file_hash = hashlib.sha256(file_data).hexdigest()
 
-def part(name, value, filename=None, ctype=None):
-    hdr = f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"'
-    if filename: hdr += f'; filename="{filename}"'
-    hdr += '\r\n'
-    if ctype: hdr += f'Content-Type: {ctype}\r\n'
-    hdr += '\r\n'
-    if isinstance(value, str): value = value.encode()
-    return hdr.encode() + value + CRLF
-
-body = (
-    part('manifest', json.dumps({'/index.html': file_hash})) +
-    part('file', content, filename='/index.html', ctype='text/html; charset=utf-8') +
-    f'--{boundary}--\r\n'.encode()
+resp = requests.post(
+    f"https://api.cloudflare.com/client/v4/accounts/{ACCOUNT}/pages/projects/{PROJECT}/deployments",
+    headers={"Authorization": f"Bearer {TOKEN}"},
+    data={"manifest": json.dumps({"/index.html": {"hash": file_hash, "size": len(file_data)}})},
+    files={file_hash: ("index.html", file_data, "text/html")},
 )
-req = urllib.request.Request(
-    f'https://api.cloudflare.com/client/v4/accounts/{ACCOUNT}/pages/projects/{PROJECT}/deployments',
-    data=body, method="POST",
-    headers={"Authorization": f"Bearer {TOKEN}",
-             "Content-Type": f"multipart/form-data; boundary={boundary}"}
-)
-with urllib.request.urlopen(req, timeout=40) as r:
-    d = json.load(r)
-print("Deploy URL:", d['result']['url'])
+print(resp.json().get("result", {}).get("url"))
 ```
+
+**Key:** `manifest` must be `data=` (plain form field), NOT inside `files=`. The file hash is the field name.
 
 ### Worker (DO backend)
 ```bash
@@ -184,7 +184,8 @@ data/
 - `broadcast()` must NOT exclude sender — that was the original GO bug
 - Write tool doesn't persist to /tmp — use bash cat or Python
 - CF ENOSPC on wrangler logs is non-fatal
-- **wrangler times out (>45s)** in sandbox — use Direct API Python script above instead
+- **wrangler times out (>45s)** in sandbox — use Direct API Python (requests) script above
+- **manifest must be `data=` not `files=`** — CF API parses it differently; using files= gives 8000096 error
 
 ---
 
