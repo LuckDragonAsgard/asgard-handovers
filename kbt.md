@@ -85,3 +85,26 @@ Repo source matches live Worker `fb4904ea` — pushed earlier this session (comm
 ### All tools confirmed working ✅
 fact-check · ai-text · fal-morph · fal-faceswap · fal-inpaint · fal-rembg · generate-slides · brain-tool · soundmash-tool · face-morph-tool
 
+
+
+## Session update — 2026-04-29 (font audit + bug fixes)
+
+### Problem found: all html2canvas tools had font inheritance bug
+`#export-canvas` inherited `Londrina Solid` from `body` — not Bowlby. Computed style confirmed via Chrome DevTools.
+
+### Fixes pushed:
+- **guess-the-year-tool.html** — added `font-family: Bowlby One SC` to `#export-canvas`, `.year-display`, `.kbt-watermark` (commit 47a9ec85)
+- **linked-pics-tool.html** — added `font-family: Bowlby One SC` to `#export-canvas` (commit 8eee023b)
+- **crack-the-code-tool.html** — added `font-family: Bowlby One SC` to `#export-canvas` (commit fe488dbe)
+- **soundmash-tool.html** — defined missing `loadFontsForCanvas()` — function was called but never defined, causing ReferenceError on init (commit d0b7263b)
+
+### Final verified state — all 7 tools ✅
+| Tool | Mechanism | Font verified | KBT chrome |
+|------|-----------|--------------|------------|
+| guess-the-year | html2canvas | Bowlby One SC ✅ | Dark bg + teal bar + gold year ✅ |
+| linked-pics | html2canvas | Bowlby One SC ✅ | Dark bg + teal/gold banner ✅ |
+| crack-the-code | html2canvas | Bowlby One SC ✅ | Dark gradient + teal grid ✅ |
+| soundmash | canvas2D | ctx.font explicit ✅ | Full KBT Q+A slides ✅ |
+| ghost-actors | canvas2D | ctx.font explicit ✅ | kbtDrawChrome() Q+A ✅ |
+| brain-tool | canvas2D | N/A (no text) ✅ | Dark gradient bg ✅ |
+| face-morph | canvas2D | ctx.font explicit ✅ | KBT chrome + sticker/framed ✅ |
