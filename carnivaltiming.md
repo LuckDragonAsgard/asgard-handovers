@@ -138,3 +138,7 @@ Cloudflare Durable Object worker. `CarnivalRoom` DO:
 | v7 | 2026-04-28 | Track/XC video finish auto-detect, multi-timer trimmedMean, XC marshal tap-first flow |
 | v6 | 2026-04-28 | Video finish lane picker + reaction offset + offline fallback |
 | v5 | 2026-04-27 | DO v8, real-time WS sync, full role system |
+
+## Deploy notes
+- Use `CF_PAGES_TOKEN` from vault (cfat_ prefix, Pages:Edit scope) — NOT CF_API_TOKEN
+- `cd /tmp && CLOUDFLARE_API_TOKEN=<CF_PAGES_TOKEN> CLOUDFLARE_ACCOUNT_ID=a6f47c17811ee2f8b6caeb8f38768c20 HOME=/tmp/wh <wrangler> pages deploy /tmp/ct-deploy --project-name=carnival-timing --branch=main`
