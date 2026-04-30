@@ -31,7 +31,7 @@
 - D1: health_log + health_state in asgard-brain
 
 ## Key facts
-- Dashboard PIN: 2967
+- Dashboard PIN: <vault: PADDY_PIN — ask Paddy out-of-band>
 - API PIN (X-Pin): PADDY_PIN CF secret value
 - D1 asgard-brain: b6275cb4-9c0f-4649-ae6a-f1c2e70e940f
 - CF account: a6f47c17811ee2f8b6caeb8f38768c20
