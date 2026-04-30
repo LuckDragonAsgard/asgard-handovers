@@ -130,6 +130,7 @@ Cloudflare Durable Object worker. `CarnivalRoom` DO:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v8.2.3 | 2026-04-30 | House `<select>` per lane in arm dialog; house stored in armed state + published results + Firebase. School name datalist on carnival creation form |
 | v8.2.2 | 2026-04-29 | Added `--border: #30363d` to `:root` CSS (was referenced in 12 inline templates but never declared) |
 | v8.2.1 | 2026-04-29 | Replaced blocking `confirm()` in `_offerSetPin` with custom offer-pin-modal (fixes CDP/browser freeze) |
 | v8.2 | 2026-04-29 | DQ flags per lane, heat picker on publish, admin PIN, CSV export fix |
@@ -168,6 +169,12 @@ carnivalResults/{carnivalCode}/
     {key}  → {...resultData, _school, _carnivalCode}
 ```
 
+### House data flow (v8.2.3+)
+
+Lane arm dialog → house `<select>` per lane → stored in `armed[lane].house` → included in published result rows as `house` field → written to Firebase via `pushToFirebase()` → school page reads `p.house` for house points tally.
+
+House defaults: Nelson / Gem / Ferguson / Reid. Override via `carnivalMeta.houses` array.
+
 ### Key facts
 - `carnivalCode` = `this.state.id.name` (DO name = the room code e.g. "RAJR")
 - `school` from `stateData.meta.school` — set when carnival is created on carnivaltiming.com
@@ -177,7 +184,10 @@ carnivalResults/{carnivalCode}/
 
 ### Deployed
 - Worker: version `c9dc3758-1f1d-4216-bd15-320c46eae665` (2026-04-30)
-- School pages updated: `LuckDragonAsgard/sportcarnival-hub` commits `93fe00bc` (athletics) and `af5af472` (swimming)
-- `williamstownps/athletics.html` — live results panel, filters `/athletics|track/i`
-- `williamstownps/swimming.html` — live results panel, filters `/swim/i`
-- `williamstownps/crosscountry.html` — intentional login wall, unchanged
+- School pages: `LuckDragonAsgard/sportcarnival-hub`
+  - `williamstownps/athletics.html` v2 (commit `55804ecf`) — live results, house points leaderboard, district qualifiers tab, filters `/athletics|track/i`
+  - `williamstownps/swimming.html` v2 (commit `88f5263a`) — live results, house points leaderboard, district qualifiers tab, filters `/swimming|swim/i`
+  - `williamstownps/crosscountry.html` — intentional login wall, unchanged
+- House points: 1st=8, 2nd=6, 3rd=4, 4th=3, 5th=2, 6th=1 — tallied from `p.place` on each published result
+- District qualifiers: top 2 per event; strips "— Heat N / Final" suffix to merge heats by best time
+- Houses: Nelson (#3B82F6), Gem (#22C55E), Ferguson (#EF4444), Reid (#F5C518)
