@@ -142,3 +142,42 @@ Cloudflare Durable Object worker. `CarnivalRoom` DO:
 ## Deploy notes
 - Use `CF_PAGES_TOKEN` from vault (cfat_ prefix, Pages:Edit scope) — NOT CF_API_TOKEN
 - `cd /tmp && CLOUDFLARE_API_TOKEN=<CF_PAGES_TOKEN> CLOUDFLARE_ACCOUNT_ID=a6f47c17811ee2f8b6caeb8f38768c20 HOME=/tmp/wh <wrangler> pages deploy /tmp/ct-deploy --project-name=carnival-timing --branch=main`
+
+---
+
+## Firebase Bridge (added 2026-04-30, Session 16)
+
+When admin publishes a result, the DO Worker now mirrors it to Firebase RTDB (`willy-district-sport`) so school pages on sportportal.com.au show live results.
+
+### How it works
+
+1. Admin publishes → `cRef("results/{key}").set(data)` → `"set"` message hits DO
+2. DO stores + broadcasts as normal (no change to existing behaviour)
+3. DO calls `this.pushToFirebase(next, resultKey, processed).catch(()=>{})`:
+   - Gets Firebase anonymous auth token — satisfies `.write: "auth != null"` rule
+   - PUTs carnival meta to `carnivalResults/{carnivalCode}/meta`
+   - PUTs result to `carnivalResults/{carnivalCode}/results/{resultKey}`
+4. School pages listen to `carnivalResults/` in Firebase, filter by school name, render in real-time
+
+### Firebase schema
+
+```
+carnivalResults/{carnivalCode}/
+  meta     → {school, sport, name, carnivalCode, updatedAt}
+  results/
+    {key}  → {...resultData, _school, _carnivalCode}
+```
+
+### Key facts
+- `carnivalCode` = `this.state.id.name` (DO name = the room code e.g. "RAJR")
+- `school` from `stateData.meta.school` — set when carnival is created on carnivaltiming.com
+- Anonymous auth satisfies `.write: "auth != null"` — no Firebase rule change needed
+- Bridge is fire-and-forget, never blocks the DO response
+- Applied to both `"set"` and `"update"` message cases
+
+### Deployed
+- Worker: version `c9dc3758-1f1d-4216-bd15-320c46eae665` (2026-04-30)
+- School pages updated: `LuckDragonAsgard/sportcarnival-hub` commits `93fe00bc` (athletics) and `af5af472` (swimming)
+- `williamstownps/athletics.html` — live results panel, filters `/athletics|track/i`
+- `williamstownps/swimming.html` — live results panel, filters `/swim/i`
+- `williamstownps/crosscountry.html` — intentional login wall, unchanged
