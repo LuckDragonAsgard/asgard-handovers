@@ -1,48 +1,53 @@
-# Asgard — Handover (Session 6 EOD — 2026-04-29)
+# Asgard / Falkor — handover 2026-05-10
 
-> Canonical. Drive=0. Source: github.com/PaddyGallivan/asgard-source
+**Naming:** Asgard = platform. Falkor = agent. Don't conflate.
 
-## Session 6 wins
-1. asgard v8.8.3 — fixed showProjectInfo onclick (template-literal escaping). All tile modals work.
-2. D1 cleanup — archived Thor/Thunder, merged KBT/Superleague/ON-ICE variants (~20 ops).
-3. Jacky PIN — JACKY_PIN set, onboarding email sent (rooney.jaclyn.l@gmail.com).
-4. D1 gaps filled — GitHub URLs + Recommendations for all active projects.
-5. Long Range Tipping 404 fixed — Vercel Auth disabled + domain re-added via API. Live.
-6. asgard-watchdog v1.1.0 — 5min cron, 9 endpoints, D1 log, state-change alerts, auto-heals asgard.
+## What shipped (45 tasks, 1 day)
 
-## Live workers (2026-04-29)
-| Worker | Version | Notes |
-|---|---|---|
-| asgard | 8.8.3 | Dashboard |
-| asgard-ai | latest | AI chat |
-| asgard-tools | 1.5.4 | Deploy relay |
-| asgard-brain | 1.2 | D1 + PIN auth |
-| asgard-vault | 1.2.0 | KV secrets |
-| asgard-backup | 1.2.0 | Backup |
-| asgard-watchdog | 1.1.0 NEW | 5min health cron |
+### Bugs fixed
+- Vision PNG (mime auto-detect from base64 magic bytes in asgard-ai)
+- Aeneas login (vault AENEAS_PIN added)
+- /afl/comp empty (R9 tips seeded)
+- Falkor chat JSON-parse crash on certain queries (defensive .catch on all sub-agent fetches; falkor-web stubbed)
+- Self-heal logging (falkor-code D1 binding restored — was stripped 2026-05-07)
+- Ghost endpoints (asgard-watchdog removed asgard/asgard-brain/asgard-backup, 8000 false alarms cleared)
+- 26K stale HEALTH_FAIL decisions cleared, cortex projects pruned
+- Drive OAuth widened to drive.readonly + LD_GOOGLE_REFRESH_TOKEN preferred over GOOGLE_REFRESH_TOKEN
+- pinOk accepts `?pin=` query param (browser OAuth flow works)
+- Asgard hub black-screen (apostrophe-in-template-literal at line 656)
+- Brief tab showing wrong status (CF edge-loop on luckdragon.io probes; switched to workers.dev)
 
-## Watchdog
-- https://asgard-watchdog.pgallivan.workers.dev/ (/status /run)
-- Cron: */5 * * * *
-- Workers via CF Deployments API (avoids zone loopback)
-- Sites via HTTP: longrangetipping.com, carnivaltiming.com, wps.carnivaltiming.com
-- Alerts: paddy@luckdragon.io + rooney.jaclyn.l@gmail.com (state-change only)
-- Auto-heals asgard from GitHub if down
-- D1: health_log + health_state in asgard-brain
+### Structural
+- 11-probe functional smoke test on falkor-code, every 15 min via cron
+- Apostrophe-trap regex catches the JS template-literal bug class
+- All inter-worker URLs swapped to *.luckdragon.io (except asgard-tools brief probes)
 
-## Key facts
-- Dashboard PIN: <vault: PADDY_PIN — ask Paddy out-of-band>
-- API PIN (X-Pin): PADDY_PIN CF secret value
-- D1 asgard-brain: b6275cb4-9c0f-4649-ae6a-f1c2e70e940f
-- CF account: a6f47c17811ee2f8b6caeb8f38768c20
-- Deploy: POST asgard-tools.pgallivan.workers.dev/admin/deploy X-Pin=PADDY_PIN
-- Vault: GET asgard-vault.pgallivan.workers.dev/secret/KEY X-Pin=PADDY_PIN
+### New Asgard hub features (live at falkor.luckdragon.io)
+- 6 sidebar tabs: Home / Chat / Brief / Inbox / Spend / Sites (was 2)
+- Home actually renders now (was defined but never called)
+- Brief tab pulls /brief
+- Inbox shows D1 msg_inbox per user
+- Spend graceful placeholder (backend pending)
+- Sites: 11 site cards with Open + "Edit via Falkor" buttons
+- Personality layer locked (Cecil St, family, Essendon, projects, procrastination push-back, brain-first, AEST awareness)
 
-## CRITICAL: Null-byte footgun
-Claude Write/Edit pads files with null bytes. Strip before CF deploy:
-  python3 -c "open(f,"wb").write(open(f,"rb").read().replace(b"\x00",b""))"
+### Other
+- Leaked gist 13d6e09 deleted (had revoked credentials)
+- mascot-gen.pages.dev built + deployed from kbt-mascot-generator
+- Drive read access permanent
 
-## Pending
-- Commit .github/workflows/deploy.yml for GHA CI/CD (30sec user task)
-- Migrate pgallivan@outlook.com + KBT Drive to R2
-- Watchdog: self-monitoring (external check of asgard-watchdog itself)
+## Still outstanding
+- **Voice clone** — needs 5-10 min audio sample from Paddy
+- **Tool-calling (Jarvis)** — Falkor uses regex routing, not Anthropic tool_use
+- **NS for longrangetipping.com.au + schoolstaffhub.com.au** — registrar logins needed
+- **Squarespace 8-domain verification** — inbox click needed
+- **Phase 81 PC bridge** — not running locally
+- **/spend backend endpoint on asgard-tools** — UI placeholder live
+
+## Smoke status
+11/11 passing, 1.4s avg, persisted to falkor_smoke_results, alerts via decisions table.
+
+## Pickup protocol
+1. Read this doc
+2. Hit https://asgard-tools.luckdragon.io/brief?pin=535554&user=paddy for live brief
+3. Hit https://falkor-code.pgallivan.workers.dev/smoke (POST) for 11-probe status
