@@ -1,3 +1,18 @@
+## 2026-05-13 session 6 — All gaps resolved
+
+### Done
+- **ElevenLabs** ✅ — key updated with full permissions, stored in kbt-api/asgard-ai/Vault
+- **kbt-trial.vercel.app** ✅ — redeployed fresh (prj_cxqNcQZipyJF2NWMarP5UswZkMrf), all 4 routes live
+- **Slides templates 49-68** ✅ — 20 new templates created in Drive (copies of name_the_brain/soundmash/classic), all mapped in TEMPLATE_IDS
+- **Deck gen with new types** ✅ — verified live with baby_photo + wrong_speed
+
+### All major KBT gaps from audit now closed
+
+### Remaining (low priority)
+- question_success field not written to on use
+- Player answer submission app
+- Team/player wrap reports
+
 ## 2026-05-13 session 5 — Full system audit + gap fixes
 
 ### Done
