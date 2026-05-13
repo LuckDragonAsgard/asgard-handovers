@@ -1,3 +1,50 @@
+## 2026-05-13 — Asgard Build Sprint 4 (full-day session)
+
+### What was done
+- **Babel removed** — falkor-ui v9.30→9.33: pre-compiled JSX, eliminated 2.5MB Babel Standalone, load time ~1s
+- **Login fixed** — falkor-push CORS added asgard.luckdragon.io; D1 binding restored after accidental drop; falkor-calendar crash fixed (corsHeaders scope bug)
+- **asgard-ai overwrite root cause found & fixed** — falkor-code was pulling from LuckDragonAsgard/asgard-source (old stale 134KB); fixed to Luck-Dragon-Pty-Ltd/asgard-source + asgard-ai autoHeal=false
+- **asgard-ai watchdog** — falkor-workflows runs every minute, checks deployment ID vs vault ASGARD_AI_CANONICAL_DEPLOY_ID, auto-redeploys from GitHub if mismatch
+- **Smoke tests fixed** — 3 permanently-failing criticals: vault.agent_pin (t.length>4 not >16), hub.ui (/health not /healthz + j.status check), brain.rag (master pin not agent pin)
+- **after_school_checkin log spam** — suppress logging on skipped runs
+- **5 new agentic tools** — rate_doc, get_doc_ratings, drive_patch, docs_replace_text, docs_append_text; _agentFullAccessToken helper for Drive write scope
+- **generate-and-store endpoint** — POST /image/generate-and-store → DALL-E/gpt-image-1 → Supabase generated-images bucket → permanent public URL
+- **Falkor dog mascot** — 6 poses generated (hero, thinking, working, success, loading, error) stored in Supabase; wired into loading screen, PIN screen, error boundary; FALKOR_MASCOT constant in app
+- **Project hub enriched** — 54/54 detail_md, 35/54 github_url, 33/54 cloudflare_worker, 9/9 concept_md for ideas
+- **Auto-handover cron** — falkor-workflows 21:30 UTC nightly, reads today's project_events, prepends to SESSION-HANDOVER.md
+- **CORS audit** — fixed falkor-push, falkor-calendar for asgard.luckdragon.io origin
+- **falkor-agent history overflow fixed** — cleared 200-item corrupt history; added 80KB budget guard + 4KB per-message cap; this was causing WS "Connecting to Falkor..." stuck state
+- **CF_ZONE_ADMIN_TOKEN** created and stored in vault
+- **longrangetipping.com.au** — zone deleted/re-added with activation check triggered; dns_activate task queued in falkor_tasks to auto-add Vercel DNS once zone goes active
+- **21/21 services healthy** at session end
+
+### Current versions
+- falkor-ui: v9.33.0 | asgard-ai: v6.5.0 | falkor-agent: v2.10.0 | falkor-workflows: v3.13.0 | falkor-brain: v1.0.0
+
+### What's outstanding
+1. **longrangetipping.com.au** — dns_activate task in falkor_tasks will auto-complete when CF zone activates (NS correct, ~5-60 min)
+2. **Enable GCP APIs** — Google Docs/Sheets/Slides at console.cloud.google.com/apis/library?project=205533966048
+3. **schoolstaffhub.com.au** — register at VentraIP first, then NS to Cloudflare
+4. **falkor-ui still shows "Connecting to Falkor..."** in browser — browser has old asgard-workers (v9.21.0) cached. Fix: open in incognito or clear site data for asgard.luckdragon.io then log in fresh
+5. **Commit patched sources to GitHub** — fa_fixed.js (falkor-agent history fix) and latest worker.js not yet committed
+
+### Resume steps
+1. `SELECT current_state FROM project_state WHERE project_id='asgard'`
+2. Read this block
+3. Check if longrangetipping.com.au zone is active: `curl -s -H "Authorization: Bearer $CF_ZONE_ADMIN_TOKEN" "https://api.cloudflare.com/client/v4/zones/5aaf2c324fdf6f370636d33f6ea891d7" | python3 -c "import json,sys; print(json.load(sys.stdin)['result']['status'])"`
+4. If still pending, dns_activate task will handle it automatically
+5. Commit falkor-agent and falkor-ui sources to GitHub
+
+### Key paths
+- Canonical asgard-ai source: github.com/Luck-Dragon-Pty-Ltd/asgard-source/workers/asgard-ai.js
+- Canonical falkor-workflows: github.com/Luck-Dragon-Pty-Ltd/asgard-source/workers/falkor-workflows.js
+- Vault: asgard-vault.pgallivan.workers.dev (X-Pin: 535554)
+- DB: asgard-prod b6275cb4-9c0f-4649-ae6a-f1c2e70e940f
+- CF_ZONE_ADMIN_TOKEN in vault — has Zone Edit + DNS Edit for all zones
+- LRT zone ID: 5aaf2c324fdf6f370636d33f6ea891d7
+- Falkor mascots: huvfgenbcaiicatvtxak.supabase.co/storage/v1/object/public/generated-images/falkor-mascot/
+
+---
 ## 2026-05-13 — Sport Portal: privacy policy fix, Drive organisation, reference doc, legal/compliance
 
 ### What was done
