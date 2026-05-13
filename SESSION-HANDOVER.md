@@ -1,3 +1,37 @@
+## 2026-05-13 session 9 — architecture separation + deck gen fixed
+
+### What was done
+- Removed ALL KBT code from asgard-ai (drive-op, self-heal cron, GITHUB_TOKEN secret)
+- asgard-ai is now clean at 236,283 chars — Asgard can deploy freely
+- Moved drive-op handler into kbt-api (KBT owns its own Drive/Slides operations)
+- Built SA JWT auth with domain-wide delegation for Slides API
+- Resolved Google OAuth credential mess:
+  - Found correct GCP project: bubbly-clarity-494509 (KBT Host App client 342815819710)
+  - Stored KBT client secret (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) in kbt-api + Vault
+  - Paddy generated drive-scoped refresh token via OAuth flow
+  - Stored as KBT_DRIVE_REFRESH_TOKEN in kbt-api
+- Deck generation VERIFIED WORKING: https://docs.google.com/presentation/d/17wh5SJlcHa_qs22AhWRJ2DFBaqAgSe1tLsCMifIcpwE/edit
+- Built live scoring admin matching knowbrainertrivia.com.au interface
+- Built player app with persistent accounts, team codes, captain mode
+- Built leaderboard broadcast control (host toggles visibility)
+
+### State
+- kbt-api: all endpoints working including deck gen
+- asgard-ai: clean, no KBT code
+- kbt.luckdragon.io: live (49 tools + host-app + player-app)
+- kbt-trial: live admin dashboard
+
+### Resume steps
+1. Test player app end-to-end with a real event (KBT-5274 Steam Packet tonight)
+2. Templates 49-68: need visual design in Google Slides (Paddy only, can't do via API)
+3. asgard-ai will stay clean — kbt-api owns its own stack permanently
+
+### Key secrets (reference only, values in CF + Vault)
+- KBT_DRIVE_REFRESH_TOKEN: drive-scoped, paddy@luckdragon.io, KBT Host App client
+- GOOGLE_CLIENT_ID: 342815819710 (KBT Host App)
+- GOOGLE_CLIENT_SECRET: stored as KBT_GOOGLE_CLIENT_SECRET in Vault
+- Re-auth: https://kbt-api.luckdragon.io/api/google-auth-start
+
 ## 2026-05-13 session: Brief + Sport Portal Links Doc
 
 ### What was done
