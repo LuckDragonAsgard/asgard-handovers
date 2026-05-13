@@ -1,3 +1,19 @@
+## 2026-05-13 session 7 — Final gap fixes
+
+### Done
+- **question_success tracking** ✅ — score-event now updates times_used/last_used_at for all event questions
+- **update-question-stats endpoint** ✅ — /api/update-question-stats (single or batch)
+- **submit-answer endpoint** ✅ — /api/submit-answer with inline fuzzy check → kbt_live_answers
+- **team wrap** ✅ — /api/team-wrap returns events_played/avg_score/best_score/recent/trend
+- **Player app wrap wired** ✅ — Wrapped tab now fetches real data, Home tab shows real stats
+- **CF worker serves player-app** ✅ — kbt-trial.pgallivan.workers.dev/player-app serves patched player app
+- **kbt-api GitHub** commit f0ac0044, then further commits
+
+### Note
+Vercel kbt-trial.vercel.app is live but can't be updated (luck-dragon team scope).
+CF worker is the reliable deployment path going forward.
+
+### KBT complete — no remaining gaps
 ## 2026-05-13 session 6 — All gaps resolved
 
 ### Done
