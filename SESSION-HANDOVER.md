@@ -1,3 +1,44 @@
+## 2026-05-14 — Asgard: self-heal revert loop closed
+
+### What was happening
+Multiple chats had been deploying changes to asgard-ai and watching them disappear within ~14 minutes. Three versions were live simultaneously: GitHub `asgard-source/workers/asgard-ai.js` at 244,876 B (latest committed but never deployed), live CF deployment at 238,256 B (post-session-9 clean version, deploy_id `3b36a681...` / version_id `89867dc1...`), and vault canonical pinned to `cb8d4bc1...` / 227,737 B (an older revision). The falkor-workflows watchdog (cron `* * * * *`, throttled 14-min) compared live version_id against vault canonical, found mismatch, fetched GitHub source, and redeployed — silently undoing whatever each chat had pushed.
+
+Compounding the chaos: SESSION-HANDOVER.md contained contradictory claims across sessions — session 8 called the 236k-version a bad rogue overwrite, session 9 called the same-size clean version the correct state. Chats were reading conflicting handovers and "fixing" different things.
+
+### What was done
+- Confirmed live asgard-ai version_id `89867dc1-b568-4dd4-ad65-4d686fac140c`, size 238,256 B, /health green (43 routes, v6.5.0).
+- Audited self-healers: only the falkor-workflows watchdog touches asgard-ai. falkor-code has `autoHeal: false` for asgard-ai (monitor only).
+- Adopted current live as canonical truth.
+- Pushed live bytes to GitHub `Luck-Dragon-Pty-Ltd/asgard-source/workers/asgard-ai.js` — commit `383c61d3`. GitHub now matches CF live exactly (sha `1d373fb56b3a`, 238,256 B).
+- Updated vault `ASGARD_AI_CANONICAL_DEPLOY_ID` = `89867dc1-b568-4dd4-ad65-4d686fac140c`.
+- Updated vault `ASGARD_AI_CANONICAL_SIZE` = `238256`.
+- Deleted KV stamp `watchdog:asgard-ai:last-check` from ASGARD_KV so next cron tick re-evaluates immediately.
+- Verified post-fix: live version_id == vault canonical == GitHub source size. Watchdog now returns `{ status: 'healthy' }` on each check instead of redeploying. No revert in 15+ minutes since the change.
+
+### Going forward — how to change asgard-ai without it reverting
+1. Commit new bytes to `Luck-Dragon-Pty-Ltd/asgard-source/workers/asgard-ai.js` FIRST.
+2. Deploy to CF (`PUT /workers/scripts/asgard-ai`, multipart, preserve bindings via `inherit` for secrets).
+3. Capture the new version_id from the deploy response, PUT it to vault `ASGARD_AI_CANONICAL_DEPLOY_ID`, and PUT the new size to `ASGARD_AI_CANONICAL_SIZE`.
+
+Skipping step 3 will cause the watchdog to redeploy from GitHub at the next tick. Since GitHub already matches live, that redeploy is now a no-op churn (same bytes, new version_id) instead of a hostile revert — but it's still tidier to update the canonical pointer.
+
+### Considered for next session
+- Make the watchdog less aggressive: only heal on catastrophic conditions (size drop >50%, or known-bad marker present). Auto-bump canonical when live size grows within a normal band. Removes the false-positive class entirely.
+- Reconcile SESSION-HANDOVER.md contradictions — too many "Session N — final fix" blocks describing the same drift.
+
+### Key paths and secrets touched
+- GitHub: `Luck-Dragon-Pty-Ltd/asgard-source/workers/asgard-ai.js` (commit `383c61d3`), `Luck-Dragon-Pty-Ltd/asgard-handovers/asgard.md` + `SESSION-HANDOVER.md`
+- Vault: `ASGARD_AI_CANONICAL_DEPLOY_ID`, `ASGARD_AI_CANONICAL_SIZE`
+- KV: `ASGARD_KV` namespace `a74beb8df243488b80e13ef0907a5c62`, key `watchdog:asgard-ai:last-check` (deleted)
+- D1: `asgard-prod` (`b6275cb4-9c0f-4649-ae6a-f1c2e70e940f`) — event logged
+
+### Resume steps
+1. `curl -s https://asgard-ai.luckdragon.io/health` — should be 200, v6.5.0.
+2. `curl -s -H 'Authorization: Bearer $CF_TOKEN' https://api.cloudflare.com/client/v4/accounts/a6f47c17811ee2f8b6caeb8f38768c20/workers/scripts/asgard-ai/versions | jq '.result.items[0].id'` — should still be `89867dc1...` unless a deliberate redeploy happened.
+3. `curl -s -H 'X-Pin: 535554' https://asgard-vault.pgallivan.workers.dev/secret/ASGARD_AI_CANONICAL_DEPLOY_ID` — should match live version_id from step 2.
+4. If you need to change asgard-ai: follow the three-step procedure above, in that order.
+
+---
 ## 2026-05-13 session 9 ADDENDUM — deck gen verified
 
 Deck generation fully tested end-to-end:
