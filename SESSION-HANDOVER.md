@@ -1,3 +1,40 @@
+## 2026-05-13 — Sport Platform: Firebase Decommission Complete + Full Test Suite
+
+**Who:** Paddy
+**Project:** Sport Platform (sportportal / sportcarnival / schoolsportportal / carnivaltiming)
+
+### Done
+1. **Firebase rules locked** — anonymous writes now return HTTP 401 on all paths (/test_root, /fl, /scores, /users, /fb). Public reads still work (/fl/WPSAT). Rules were pasted by Paddy in an earlier session and confirmed active via probe.
+2. **Firebase service account created** — `firebase-rules-admin@willy-district-sport.iam.gserviceaccount.com`, role: Firebase Realtime Database Admin. JSON key stored in Vault as `FIREBASE_ADMIN_KEY_WILLY_DISTRICT_SPORT`. Claude can now manage Firebase rules and data via API without Console access.
+3. **WPS_ATHLETICS_H and WPS_SWIMMING_H fully off Firebase** — both carnival apps now read/write via carnival-results D1 API (`POST /api/results/{code}` with `X-Publish-Pin` header). Zero live Firebase SDK in any production page (verified by stripping HTML+JS comments).
+4. **CARNIVAL_PUBLISH_PIN** — 20-char PIN generated, stored in Vault, bound as worker secret on carnival-results. Marshal apps prompt once per session on first publish.
+5. **/division/primary/wyndham** — was 404, now serves a proper Wyndham Division portal page (title, admin sign-in pill, Live Timing CTA). All hierarchy pages now responding.
+6. **Full test suite run — 58/58 checks passing:**
+   - 34 URL checks (all 200/301/302 as expected)
+   - 10 page title checks
+   - 4 nav banner / cross-link checks
+   - 2 Firebase SDK checks (zero live Firebase in either carnival app)
+   - 5 Firebase security checks (all 401)
+   - 3 D1 API checks (list, WPSAT results, status)
+   - 2 redirect checks (XC26→district, district.luckdragon.io)
+
+### Outstanding
+- `www.schoolsportportal.com.au` serves the full portal (200) rather than a strict 301 to apex. Worker route is set, redirect code is in worker, but DNS record still points to Cloudflare Pages infrastructure. Users get correct content. Fix requires DNS edit permission (CF_FULLOPS_TOKEN doesn't have DNS edit on this zone). Acceptable for now.
+- First real carnival day: marshal opens Athletics26 page, prompt asks for publish PIN. Give them `CARNIVAL_PUBLISH_PIN` from Vault. Prompt fires once per session (sessionStorage).
+- After first successful carnival: verify D1 results via `/api/results?carnival=WPSAT`, then schedule GCP project deletion after 1 clean month.
+
+### Resume steps
+1. Verify Firebase anon-write probe: `curl -sS -X PATCH -H "Content-Type: application/json" --data '{"_probe":true}' "https://willy-district-sport-default-rtdb.asia-southeast1.firebasedatabase.app/test_root.json"` → should 401
+2. `curl -sS -o /dev/null -w "%{http_code}" https://schoolsportportal.com.au/division/primary/wyndham` → should 200
+3. Everything else is stable — run the full test script from this session if needed
+
+### Key paths and secrets touched
+- Vault: `FIREBASE_ADMIN_KEY_WILLY_DISTRICT_SPORT`, `CARNIVAL_PUBLISH_PIN`
+- Workers modified: `ssp-portal` (wyndham route), `sportcarnival-hub` (Athletics/Swim Firebase removal), `carnival-results` (PIN auth), `carnival-timing-html` (per-event D1 routes)
+- Service account: `firebase-rules-admin@willy-district-sport.iam.gserviceaccount.com`
+- GCP project: `willy-district-sport` — Firebase rules active, anon writes blocked
+
+---
 ## 2026-05-13 — Asgard Final Build: Full Capability Audit + Agent Loop Fix
 
 **Who:** Paddy
