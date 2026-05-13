@@ -1,3 +1,16 @@
+## 2026-05-13 session 9 ADDENDUM — deck gen verified
+
+Deck generation fully tested end-to-end:
+- ✅ Questions render with correct type labels (Follower Freebie, Classic, 50/50, Name The Brain, etc.)
+- ✅ Q slide shows question text only; A slide shows question + answer
+- ✅ Template stub slides (Facemorph examples) now deleted before adding real questions
+- ✅ Field normalisation: accepts both qtype/question/answer AND question_type/question_text/answer_text
+- ✅ Type name normalisation: "Follower Freebie" → follower_freebie
+- ✅ No stale Facemorph slides in output
+- ✅ Drive copy uses paddy@luckdragon.io token (drive scope)
+- ✅ Slides batchUpdate uses SA JWT
+
+Verified output deck: 4 questions → 11 slides (3 intro + 4×Q+A pairs)
 ## 2026-05-13 session 9 — architecture separation + deck gen fixed
 
 ### What was done
