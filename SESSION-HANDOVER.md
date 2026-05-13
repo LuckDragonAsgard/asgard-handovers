@@ -1,3 +1,21 @@
+## 2026-05-13 session 8 (continued) — site recovery + audit
+
+### What happened
+- CF Pages for kbt.luckdragon.io broken (stuck May 6, ad_hoc uploads causing 500s)
+- Discovered 51-file repo structure including host-app.html, live-scoring.html, kbt-data.js
+- host-app.html is the REAL host dashboard — has per-Q marking, R1/R2/R3 columns, Gambler Pairs A-E
+- Fixed kbt.luckdragon.io: deployed kbt-tools Worker serving from R2 (49 files uploaded)
+- All 31 tools now live with Save to Library (kbtSave calls /api/save-question → R2)
+- Confirmed scoring: R1=12, R2=12, R3=16; Bonus=0pt; Gambler=5pt max
+- Gambler mechanics correct: pick N, all right = N pts, any wrong = 0
+
+### Resume steps
+1. kbt.luckdragon.io/host-app — check it loads properly and scoring works  
+2. kbt-trial admin — needs per-Q marking + R1/R2/R3 columns to match real host-app
+3. player-app loadWrapData gap: kbt.luckdragon.io/player-app vs kbt-trial version
+4. Types 49-68 templates: needs Paddy to open in Slides, design properly, test deck gen
+5. asgard-ai drive-op: self-repair needed in Asgard session
+
 ## 2026-05-13 session 8 — Full feature audit + gap fixes
 
 ### What was audited
