@@ -1,3 +1,34 @@
+## 2026-05-13 session 8 — Full feature audit + gap fixes
+
+### What was audited
+Paddy asked: scoring tested? rounds/questions configurable? standard weekly working? Gambler wired? apps linked? Roster?
+
+### Honest audit results (before this session)
+- Quiz Edit: "coming soon" ❌
+- Host Roster: "coming soon", no DB table ❌
+- Gambler wager: in quiz template but not wired in scoring ❌
+- Round/Q count: hardcoded, not configurable ❌
+- asgard-ai drive-op: keeps disappearing (recurring overwrite issue)
+
+### What was fixed
+- **kbt_host_schedule table** created in kbt-integration-db (7c6ee10f-93d4-475e-889d-cade0dbfd076)
+- **kbt_wager_log table** created in kbt-integration-db
+- **/api/host-schedule** — GET/POST/PATCH/DELETE for host shift management
+- **/api/wager** — POST wager, GET wagers per event, PATCH to resolve (applies score change)
+- **Quiz Edit** — rebuilt in admin: load any event by code, edit type/points/time per slot
+- **Round/Q config** — selectable 2-5 rounds, 8-12 per round; regenerateQuizStructure() rebuilds from scratch
+- **Host Roster** — full UI: add/view/delete shifts with host, venue, date, time, status, notes
+- **Gambler wager panel** — in live scoring UI: select team, set wager 1-5, lock wager, resolve correct/wrong
+- **kbt-trial serving from R2** — worker now fetches admin-app.html + player-app.html from R2 CDN (no more atob size limit)
+- **asgard-ai drive-op** — restored again; root cause: something deploys a 236k version that overwrites patch
+
+### Known recurring issue
+asgard-ai drive-op route keeps disappearing. The deployed version periodically gets overwritten by a 236k version from an unknown source. Currently restored. GitHub index.js + multipart.bin both have the patch. Investigate who/what is deploying asgard-ai outside of GitHub source.
+
+### Standard weekly format (confirmed)
+KBT_PACK = 3 rounds × 10 questions + Bonus 1 (R1) + Bonus H&T (R2) + Gambler (R3 end) = 32 total
+All correct and configurable.
+
 ## 2026-05-13 session 7 — Final gap fixes
 
 ### Done
