@@ -1,46 +1,53 @@
 # KBT — Know Brainer Trivia
-Last updated: 2026-05-13 (session 4)
+Last updated: 2026-05-13 (session 5)
 
 ## Live
 - **Website:** knowbrainertrivia.com.au
 - **Tools hub:** kbt.luckdragon.io/tools (31 tools, 8 categories)
-- **API worker:** kbt-api.luckdragon.io
+- **API:** kbt-api.luckdragon.io
+- **Host admin:** kbt-trial.pgallivan.workers.dev
 - **Source:** github.com/LuckDragonAsgard/kbt-trivia-tools
 
-## Deck Generation — WORKING ✅
-- **Endpoint:** POST /api/generate-event-deck-v2
-- **Architecture:**
-  1. Drive copy via asgard-ai /admin/drive-op (PIN 535554) — uses paddy@luckdragon.io token
-  2. Slides batchUpdate via SA token (kbt-slides@asgard-493906) — direct Slides API
-  3. Output folder: 1LI91ZcUTl5UGR_LWN3nQyS9uDigRM0L3 (KBT Generated Decks, shared with paddy)
-- **Base template:** 1R7xJwPwd811x2nUlLe2R1V8YbYuEQI6Rc099BdGcPX8 (KBT Master Event Deck v2)
-- **Templates folder:** 1BhuxB_9YrjXYR5zWGbxkHXYEez74AAHx (KBT Templates - Canonical, paddy@luckdragon.io)
-- **Auth chain:** GOOGLE_SA_JSON (asgard-493906 kbt-slides SA) for Slides API; asgard-ai drive-op proxy for Drive copy
+## Working ✅
+- **Deck generation:** /api/generate-event-deck-v2 (asgard-ai Drive proxy + SA Slides API)
+- **Save to Library:** all 31 tools → R2 + Supabase kbt_question + bridge to questions table
+- **Fuzzy matching:** /api/check-answer (Levenshtein + AI fallback at 55-82% similarity)
+- **Score persistence:** /api/score-event → kbt_teams.score + kbt_sess table
+- **Live scoring UI:** kbt-trial.pgallivan.workers.dev Live Scoring section — real leaderboard, +/- buttons, fuzzy answer checker, Save All Scores
+- **Question engine:** approve bridges candidates → questions table; Guardian News added as source; more question types (Guess The Year, Anagram, Willywood, Connections)
+- **R2 assets:** kbt-assets bucket, CDN pub-1a54ecdb73db411abfee3ed3772db25e.r2.dev
 
-## Asset Storage — R2 ✅
-- **Bucket:** kbt-assets (Cloudflare R2)
-- **Public URL:** https://pub-1a54ecdb73db411abfee3ed3772db25e.r2.dev
-- **Save to Library:** all 31 tools → R2 + Supabase
-
-## DB
+## Database
 - **Supabase:** huvfgenbcaiicatvtxak.supabase.co
-- **kbt_qtype:** 68 rows (IDs 1–68)
-- **New Qs:** status=draft
+- **questions:** 6,099 active, 27 draft, 586 archived (real question bank)
+- **kbt_question_candidates:** question engine staging table (20 pending)
+- **kbt_qtype:** 68 rows (IDs 1-68)
+- **kbt_teams:** team registration per event
+- **kbt_sess:** historical scores per team per event
+
+## API routes (kbt-api.luckdragon.io)
+- /api/save-question — saves PNG assets to R2 + kbt_question + bridges to questions table
+- /api/check-answer — fuzzy matching: exact/partial/fuzzy/ai/wrong with confidence
+- /api/score-event — persists scores to kbt_teams + kbt_sess
+- /api/generate-event-deck-v2 — full Google Slides deck
+- /api/ai-text — AI content for tools
+- /api/deezer/search|preview — music search + stream proxy
+- /api/fal-morph|faceswap|rembg|inpaint|matting-hq — image AI
 
 ## asgard-ai /admin/drive-op (PIN 535554)
-- op: copy — { src_id, parent, name } → { ok, id, url }
-- op: slides-get — { presentation_id } → { ok, slides, title }
-- op: slides-update — { presentation_id, requests } → { ok, replies }
-- Uses GOOGLE_REFRESH_TOKEN (paddy@luckdragon.io, drive + calendar scope)
+- op: copy, slides-get, slides-update
+- Uses paddy@luckdragon.io GOOGLE_REFRESH_TOKEN (drive scope)
+- Source: github.com/Luck-Dragon-Pty-Ltd/asgard-ai commit b8a68023
 
-## Weekly workflow
-1. Tools → 💾 Save → R2 + Supabase (draft)
-2. Admin → approve questions
-3. Friday → generate-event-deck-v2 with event_id or inline questions → Google Slides deck
+## Google Cloud (Asgard project)
+- SA: kbt-slides@asgard-493906.iam.gserviceaccount.com (key 1d0357a894da)
+- Templates folder: 1BhuxB_9YrjXYR5zWGbxkHXYEez74AAHx (paddy@luckdragon.io)
+- Output folder: 1LI91ZcUTl5UGR_LWN3nQyS9uDigRM0L3
+- Base deck: 1R7xJwPwd811x2nUlLe2R1V8YbYuEQI6Rc099BdGcPX8
 
-## kbt_qtype IDs (key)
-face_morph=19, soundmash=26, crack_the_code=14, name_the_brain=24
-New types 49–68: baby_photo, backwards, pixel_reveal, city_skyline, close_up,
-country_outline, emoji_song, first_letters, flag_mashup, instrument_solo,
-intro_only, movie_frame, silhouette, sound_and_pic, stats_puzzle, text_message,
-title_sequence, translator_fail, voice_id, wrong_speed
+## Remaining gaps
+- Slides templates for question types 49-68 (new tools) — not yet built
+- ElevenLabs API key needs regenerating (Voice ID tool)
+- kbt-trial.vercel.app returns 404 (Vercel deploy broken, pgallivan.workers.dev works)
+- No player-facing answer submission app
+- question_success field not updated on use
