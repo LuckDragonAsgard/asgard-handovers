@@ -1,3 +1,22 @@
+## 2026-05-13 session 4 — Deck generation working end-to-end
+
+### Done
+- **generate-event-deck-v2 fully working** — outputs real Google Slides deck
+- **Google OAuth** — paddy@luckdragon.io approved drive+calendar scope via asgard-ai /admin/oauth-broader-url
+- **asgard-ai /admin/drive-op** patched in (PIN 535554) — proxies Drive copy using paddy's full-drive token
+- **Service account** (kbt-slides@asgard-493906) handles Slides batchUpdate via SA JWT
+- **Base template fixed** — DEFAULT_BASE_DECK_ID = KBT Master Event Deck v2 (paddy-owned)
+- **Test deck generated:** https://docs.google.com/presentation/d/18gBZQ-MA4SEZmUlqFizzdtToPUD8c8Cusochl_lmPso/edit
+- **All code committed:** kbt-api GitHub commit 98c51f45, asgard-ai commit b8a68023
+
+### Architecture
+kbt-api /api/generate-event-deck-v2:
+  1. Call asgard-ai /admin/drive-op {op:copy} (PIN 535554) → gets new presentation ID
+  2. Use SA JWT token for Slides batchUpdate (venue text, Q+A slides)
+  3. Return slides_url
+
+### Nothing outstanding on deck generation
+
 ## 2026-05-13 — Asgard: PWA v9.27.0 + Spend Tracker
 
 **Who:** Paddy
