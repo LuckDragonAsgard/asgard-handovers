@@ -1,3 +1,33 @@
+## 2026-05-13 — Asgard: All providers wired to agentic tool loop
+
+**Who:** Paddy
+**Project:** Asgard Final Build (row id=65)
+
+### Done
+- **All 4 LLM providers now have agentic tool-calling**: Anthropic (haiku/sonnet/opus), OpenAI (gpt-4o-mini etc), Gemini (2.5-flash/pro), Groq (70B).
+- **Verified live**: all 4 providers called `get_worker_code`, read falkor-brain source correctly, returned VERSION=1.0.0. 2 iterations each.
+- **Groq specifics**: groq-fast (8B) auto-upgraded to groq-70B in agentic context (8B context too small). groq-70B uses condensed tool set (9 most useful tools) + tool_choice:auto to avoid schema errors. groq-think updated from decommissioned qwen-qwq-32b to deepseek-r1-distill-llama-70b.
+- **Groq rate limit caveat**: Free tier 12k TPM. Read tasks work; write+deploy in same session may hit limits. This is a Groq infra limit, not a code bug — upgrade to Dev Tier or use OpenAI/Anthropic for write-heavy tasks.
+- **asgard-ai final deployment**: 63d523afd23849d6aeee54ffb356a452
+
+### Agentic loop capability matrix
+| Provider | Read code | Write code | Deploy | Rate limit |
+|---|---|---|---|---|
+| Anthropic haiku | ✅ | ✅ | ✅ | Generous |
+| Anthropic sonnet | ✅ | ✅ | ✅ | Generous |
+| OpenAI gpt-4o-mini | ✅ | ✅ | ✅ | Generous |
+| Gemini 2.5-flash | ✅ | ✅ | ✅ | Generous |
+| Groq 70B | ✅ | ✅* | ✅* | 12k TPM (free) |
+
+*Groq write/deploy works in isolation, but rate limits if read+write in same session.
+
+### Key paths
+- Agentic endpoint: `POST https://asgard-ai.luckdragon.io/chat/agentic` X-Pin: 535554
+- Model key examples: haiku, sonnet, gpt-4o-mini, gemini-2.5-flash, groq
+- Tools available: get_worker_code, deploy_worker, github_get_file, github_write_file, http_request, get_secret, drive_upload, drive_search, drive_read, send_email, vercel_list_projects (+ more)
+
+---
+
 ## 2026-05-13 — Sport Platform: Firebase Decommission Complete + Full Test Suite
 
 **Who:** Paddy
