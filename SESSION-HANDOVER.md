@@ -1,3 +1,23 @@
+## 2026-05-13 session 5 — Full system audit + gap fixes
+
+### Done
+- **Full KBT system doc** created (KBT_System_Reference.docx) — 15 sections, all architecture
+- **Fuzzy matching** — /api/check-answer: Levenshtein + AI fallback, confidence scores
+- **Score persistence** — /api/score-event writes to kbt_sess + kbt_teams.score  
+- **Save-to-Library bridge** — save-question now also inserts into questions table (active status)
+- **Live scoring UI** — kbt-trial.pgallivan.workers.dev Live Scoring rebuilt: leaderboard, +/-, save all, fuzzy checker
+- **Question engine approve** — bridging approved candidates to questions table  
+- **Question engine sources** — added Guardian News; more question types in prompt
+- **All fixes deployed** — fuzzy ✅ scoring ✅ bridge ✅ UI ✅ engine ✅
+
+### Remaining gaps (from audit)
+1. Slides templates for types 49-68 (new tools have no deck-gen template)
+2. ElevenLabs key regeneration (Voice ID tool blocked)
+3. kbt-trial.vercel.app 404 (Vercel deploy needs fixing)
+4. Player answer submission app
+5. question_success tracking not wired
+6. Per-team/player analytics wraps
+
 ## 2026-05-13 — Sport Platform: Full Audit, Gap Fixes, Reference Docs
 
 **Who:** Paddy
