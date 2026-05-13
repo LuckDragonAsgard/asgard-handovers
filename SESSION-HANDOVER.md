@@ -1,3 +1,20 @@
+## 2026-05-13 session 3 — OAuth fix → R2 asset storage
+
+### Done
+- **Google Drive OAuth abandoned** — bubbly-clarity-494509 project inaccessible from paddy@luckdragon.io; OAuth consent screen in Testing mode, redirect URI registrations failed
+- **R2 asset storage live** — created kbt-assets R2 bucket, enabled public access (pub-1a54ecdb73db411abfee3ed3772db25e.r2.dev), bound to kbt-api worker
+- **kbt-api rewritten** — save-question now uploads Q+A PNGs to R2 directly (no OAuth, no Drive), returns public R2 URLs stored in Supabase question_question_asset / question_answer_asset
+- **End-to-end verified** — questionId=106724, R2 URL returning 200
+- **kbt-api deployed + pushed to GitHub** (commit 75020e6d)
+
+### All outstanding items from previous sessions now resolved
+- ✅ All 31 tools have Save to Library
+- ✅ Asset uploads working (R2)
+- ✅ White slide canvas outputs (real KBT brand)
+- ✅ kbt_qtype rows 49–68 in Supabase
+
+### Nothing outstanding
+
 ## 2026-05-13 — Asgard: All providers wired to agentic tool loop
 
 **Who:** Paddy
