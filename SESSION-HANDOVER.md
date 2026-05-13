@@ -1,4 +1,36 @@
-## 2026-05-13 — Asgard Build Sprint 4 (full-day session)
+## 2026-05-13 session: Brief + Sport Portal Links Doc
+
+### What was done
+- **SESSION STARTUP completed** — fetched SESSION-HANDOVER.md, sportportal.md, asgard-tools /brief
+- **Sport Portal links document generated** — Word doc with 40+ canonical + API URLs, 7 sections (marketing, school portals, marshal apps, live timing, API, hierarchy, admin), delivered to Paddy
+- **Asgard status briefed** — 8 active projects, 152 workers, 21/21 healthy, $0.065 YTD spend, 7 top priorities (Asgard Final Build 65%, Falkor Chat 92%, asgard-ai 100%, falkor-workflows 100%, falkor-brain 100%, Sport Portal 100%, Save My Seat 100%)
+- **Sport Portal verified** — 21/21 checks passing, all canonical URLs live, D1 source of truth operational, Firebase locked (anon writes 401)
+- **Project event logged** — project_events id=51 (sportportal, session_startup, brief + doc)
+
+### Outstanding (from handover)
+1. **Calendar API consent** — /admin/oauth-broader-url?pin=535554 re-auth
+2. **CF tokens** — Zone DNS Edit + Vectorize Edit for longrangetipping.com.au, schoolstaffhub.com.au
+3. **schoolstaffhub.com.au** — re-register at VentraIP (ID verification)
+4. **/billing Stripe URL** — configure real Customer Portal in Stripe Dashboard
+5. **District Firebase migration** — post-WPS Athletics carnival
+6. **Asgard Final Build** — lock Tier 2→1 promotion list, triage Tier 3
+
+### Resume steps
+1. Check Calendar API status at /admin/oauth-broader-url?pin=535554
+2. Verify CF tokens have Zone DNS Edit, Vectorize Edit scopes
+3. Next priority: schoolstaffhub re-registration OR Asgard Final Build scope lock
+4. Return to master blueprint v2.0 to audit feature completeness
+
+### Key paths touched
+- GitHub: asgard-handovers (SESSION-HANDOVER.md, sportportal.md — read-only)
+- D1 asgard-prod (b6275cb4): project_events table, logged event id=51
+- Generated: /mnt/user-data/outputs/SportPortal_All_Working_Links.docx
+- Vault: pin 535554, CARNIVAL_PUBLISH_PIN, CF_FULLOPS_TOKEN
+
+### Deployments
+None — read-only session
+
+---## 2026-05-13 — Asgard Build Sprint 4 (full-day session)
 
 ### What was done
 - **Babel removed** — falkor-ui v9.30→9.33: pre-compiled JSX, eliminated 2.5MB Babel Standalone, load time ~1s
@@ -552,7 +584,9 @@ Possible causes: parse error in editor that silently rejected Publish; clicked S
 
 ```bash
 DB="https://willy-district-sport-default-rtdb.asia-southeast1.firebasedatabase.app"
-curl -sS -X PATCH -H "Content-Type: application/json" --data '{"_probe":true}' "$DB/test_root.json" -w "\nHTTP %{http_code}\n"
+curl -sS -X PATCH -H "Content-Type: application/json" --data '{"_probe":true}' "$DB/test_root.json" -w "
+HTTP %{http_code}
+"
 # If 200 -> rules still wide open. If 401/403 -> rules applied.
 # Cleanup if 200:  curl -X DELETE "$DB/test_root.json"
 ```
@@ -602,4 +636,3 @@ Rules file is at `Luck-Dragon-Pty-Ltd/asgard-workers/docs/firebase-rules-2026-05
 1. Run the Firebase rules check probe above
 2. If rules still open: prompt Paddy to either paste manually OR generate service account
 3. If carnival has run: verify D1 results and clean up Firebase mirror (`pushToFirebase` in `carnival-timing-ws`)
-
