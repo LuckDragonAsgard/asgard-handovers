@@ -1,88 +1,73 @@
-# KBT — Know Brainer Trivia — Handover
+# KBT — Know Brainer Trivia
+Last updated: 2026-05-13
 
-## Canonical live system
-- **Prod platform**: `knowbrainertrivia.com.au` (OLD; not rebuilt yet)
-- **GitHub Pages tools**: `luckdragonasgard.github.io/kbt-trivia-tools/` — replaces graphic designers
-- **Repo**: `github.com/LuckDragonAsgard/kbt-trivia-tools`
-- **API worker**: `kbt-api.pgallivan.workers.dev` (CF Worker, Luck Dragon Main acct)
-- **host-app**: `luckdragonasgard.github.io/kbt-trivia-tools/host-app.html` (NOT Vercel, NOT CF)
-- **Auto-deploy**: push to `main` → GH Pages deploys automatically
+## Live
+- **Website:** knowbrainertrivia.com.au
+- **Tools hub:** kbt.luckdragon.io/tools (31 tools, 8 categories)
+- **API worker:** kbt-api.luckdragon.io (deployed 2026-05-13)
+- **Question engine:** kbt-question-engine.pgallivan.workers.dev (cron every 6h)
+- **Source:** github.com/LuckDragonAsgard/kbt-trivia-tools
 
-## Real KBT slide template (WHITE background — CRITICAL)
-Source: `templates/KBT_Example_Slides.pptx` + `KBT_Question_Templates.pptx` in repo
+## DB
+- **Supabase:** huvfgenbcaiicatvtxak.supabase.co
+- **Key tables:** kbt_question, kbt_qtype (68 rows), kbt_quiz, kbt_qtag
+- **Question count:** 100,000+ (IDs from 100001)
+- **New Qs land as:** status=draft, review in admin before use
 
-- Background: **WHITE** always (never dark canvas)
-- Top-left: R_Q_ label in colored rounded rectangle (white text)
-- Question type title next to it in same bold color
-- Content centred with lots of whitespace
-- Cutout sticker photos (rembg, white outline, drop shadow)
-- Solid color bar at very bottom
-- Colors per type:
-  - Brain/Maths = green `#16a34a`
-  - Brand/Word/Crack = sky blue `#2563eb`
-  - Year = pink `#db2777`
-  - Fifty-Fifty = orange `#ea580c`
-  - MC/Ghost/Facemorph = purple `#7c3aed`
+## Tools — all 31 live at kbt.luckdragon.io/tools
+### People & Faces
+- face-morph-tool (v13: auto AI morph, AI version grid)
+- brain-tool, ghost-actors-tool, silhouette-tool, pixel-reveal-tool, close-up-tool, baby-photo-tool, linked-pics-tool
 
-## Mission: replace graphic designers
-`knowbrainertrivia.com.au` pays designers to create image question slides. GitHub Pages tools automate this. Output must be pixel-perfect — indistinguishable from what the designer produces.
+### Music & Audio
+- soundmash-tool, intro-only-tool, wrong-speed-tool, instrument-solo-tool, voice-id-tool, sound-and-pic-tool
 
-## Face morph correct technique (NOT fal.ai, NOT a split)
-Layered composite with surgical feature erasure using **MediaPipe Face Landmarker** (478-pt mesh):
-1. Detect landmarks on both faces
-2. Align Face B onto Face A canvas using eye-centre affine transform (iris pts 468/473)
-3. For each feature region: if assigned to Face A, erase that region from Face B with `blur(22px)` feathered `destination-out` fill
-4. Composite: draw Face A base → draw feathered Face B on top → 10% Face A reconciliation pass
-5. Run rembg cutout → white border sticker + drop shadow
-6. Render on 1920×1080 white KBT slide
+### Places & Geography
+- carmen-sandiego-tool, city-skyline-tool, country-outline-tool, flag-mashup-tool (v2 rebuild)
 
-## All 7 tools status
+### Movies, TV & Pop Culture
+- movie-frame-tool, title-sequence-tool, emoji-song-tool
 
-### ✅ face-morph-tool.html — REBUILT v7 (2026-04-30)
-- **Live**: `luckdragonasgard.github.io/kbt-trivia-tools/face-morph-tool.html`
-- **Commit**: `5999890a258d` — feathered blend (blur erasure + reconciliation pass)
-- MediaPipe landmark alignment, `blur(22px)` feathered feature erasure, sticker treatment
-- Outputs: question slide (sticker morph) + answer slide (3 stickers + purple answer box)
-- **Not yet tested with real face photos** — needs end-to-end validation
+### Words, Text & Puzzles
+- crack-the-code-tool, first-letters-tool, backwards-tool, text-message-tool, translator-fail-tool, stats-puzzle-tool
 
-### ❌ brain-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, green `#16a34a`, "Name The Brain."
+### Time & Numbers
+- guess-the-year-tool
 
-### ❌ guess-the-year-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, pink `#db2777`, "Guess The Year."
+### Brands & Logos
+- brand-tool
 
-### ❌ crack-the-code-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, blue `#2563eb`, "Crack The Code."
+### Utilities
+- host-brief-tool, face-prep-tool, question-dev
 
-### ❌ linked-pics-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, blue `#2563eb`, "Linked Pics."
+## Save to Library system (built 2026-05-13)
+- `/api/save-question` — generic save for all 68 question types
+- `kbt-save.js` — shared snippet: `kbtSave({type, questionText, answerText, qCanvas, aCanvas, label})`
+- 11 tools have Save button wired: pixel-reveal, city-skyline, close-up, country-outline, baby-photo, flag-mashup, movie-frame, silhouette, text-message, title-sequence, stats-puzzle
+- Remaining 6 new tools (backwards, emoji-song, first-letters, instrument-solo, intro-only, wrong-speed, voice-id, translator-fail) need Save button added
 
-### ❌ ghost-actors-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, purple `#7c3aed`, "Ghost Actors."
+## Deck generation
+- `/api/generate-event-deck-v2` — builds real Google Slides deck programmatically
+- White bg, grid texture, KBT branding applied server-side (not in tool outputs)
+- All 68 question types now have QUESTION_TYPES config (accent color + wordmark)
+- Real templates: Drive folder 1-z8QMj_9YAGrqJhzHNoBMRFg3t6JanZa (hello@knowbrainertrivia.com.au)
+- LuckDragon copies: Drive folder 1BhuxB_9YrjXYR5zWGbxkHXYEez74AAHx
 
-### ❌ soundmash-tool.html — NEEDS REBUILD
-- Wrong dark canvas template → white bg, orange `#ea580c`, "Sound Mash."
+## kbt-brand.js — NOTE
+- Was updated to dark theme (#0f172a) this session but real KBT slides are WHITE
+- Tool UI chrome can stay dark; slide canvas OUTPUTS should match real templates (white/grid)
+- TODO: revert tool canvas outputs to white to match real slide branding
 
-## Live system (host-app) — audit status
-Triple-pass audit done 2026-04-27, all ✅:
-- host-app, player-app, admin-app, wrap, kbt-data.js, kbt-api worker, question-candidates, slides-export, all 7 media tools
-- launchEvent/revealAnswer/gradeAllConfident verified, wrap tiers, submitRoundScore upsert, gradeAllConfident on empty
+## kbt_qtype IDs (key ones)
+face_morph=19, ghost_actors=20, linked_pics=22, name_the_brain=24, soundmash=26,
+crack_the_code=14, brands=17, carmen_sandiego=23, guess_the_year=8
+New types: baby_photo=49, backwards=50, pixel_reveal=51, city_skyline=52,
+close_up=53, country_outline=54, emoji_song=55, first_letters=56,
+flag_mashup=57, instrument_solo=58, intro_only=59, movie_frame=60,
+silhouette=61, sound_and_pic=62, stats_puzzle=63, text_message=64,
+title_sequence=65, translator_fail=66, voice_id=67, wrong_speed=68
 
-## Business model status
-- Live Model ✅ Ship-ready
-- Demo/Offline ✅ launchDemo() working
-- Weekly School ⚠️ Designed only
-- HQ Live/No-Host ⚠️ Designed only
-
-## Outstanding / next session
-1. **Test face-morph-tool v7** with real face photos end-to-end — verify blend quality
-2. **Rebuild brain-tool** (simplest, just image + bg swap — good starting template for the rest)
-3. **Rebuild remaining 5 tools** to white template
-4. ⚠️ **Account change noted** — user switching accounts; check GH token + CF token on new account
-
-## Key tech refs
-- MediaPipe: `cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.js`
-- rembg API: `POST kbt-api.pgallivan.workers.dev/api/fal-rembg` `{image: base64}` → `{url}`
-- KBT API: `kbt-api.pgallivan.workers.dev` (CF Worker, Luck Dragon Main `a6f47c17`)
-- KBT-trial auto-deploy: repo `a6f47c17` → CF Pages `kbt-trial-9gu.pages.dev`
-- GH Pages deploy: push to `LuckDragonAsgard/kbt-trivia-tools` main branch
+## Weekly rotation workflow
+1. Use tools during the week → 💾 Save to Library
+2. Admin → Questions → filter draft → approve
+3. Friday: pick questions → generate-event-deck-v2 → Slides deck
