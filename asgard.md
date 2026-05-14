@@ -1,6 +1,8 @@
 # Asgard — Current State (2026-05-14)
 
-## Status: Active build | Progress: ~58%
+## Status: Active build | Progress: ~60%
+
+**Fleet audit (2026-05-14):** see [asgard-fleet-audit-2026-05-14.md](./asgard-fleet-audit-2026-05-14.md) — 154 workers audited, 15 stale candidates flagged, watchdog hardened to revert only on catastrophic conditions.
 
 ## Live versions
 | Worker | Version | URL |
@@ -8,7 +10,7 @@
 | falkor-ui (PWA) | v9.43.0 | falkor.luckdragon.io + asgard.luckdragon.io |
 | asgard-ai | v6.7.0 (256 kB, 45+ routes) | asgard-ai.luckdragon.io |
 | falkor-agent | v2.12.0 | falkor-agent.luckdragon.io |
-| falkor-workflows | v3.13.0 | falkor-workflows.luckdragon.io |
+| falkor-workflows | v3.14.0 (hardened watchdog) | falkor-workflows.luckdragon.io |
 | falkor-brain | v1.0.0 | falkor-brain.luckdragon.io |
 | falkor-push | v1.1.2 | falkor-push.luckdragon.io |
 | falkor-calendar | v1.2.0 | falkor-calendar.luckdragon.io |
