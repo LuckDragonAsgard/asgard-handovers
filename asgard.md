@@ -1,28 +1,49 @@
-# ASGARD — User PINs Set to 297
+# ASGARD — Mobile UI Optimized
 
-## User PIN Directory (Current)
+## Latest: Mobile Experience Enhanced
 
-| User | PIN | Status |
-|------|-----|--------|
-| Paddy | 2967 | ✅ Project lead |
-| Jacky | 297 | ✅ Team |
-| George | 297 | ✅ Team |
-| Aeneas | 297 | ✅ Team |
-| Master | 535554 | ✅ System |
+**Mobile Improvements (2026-05-16):**
+- ✅ Touch targets: 44px+ minimum height (WCAG AA compliant)
+- ✅ Responsive padding: clamp() for adaptive spacing
+- ✅ Larger fonts: 16px minimum on mobile
+- ✅ Mobile breakpoints: 600px & 400px optimized
+- ✅ Better input fields: larger, easier to tap
+- ✅ Optimized chat UI for narrow screens
+- ✅ Avatar scaling responsive
+- ✅ Landscape mode support
 
-All configs in Vault + falkor-agent auth updated.
+**What's Better:**
+- 🎯 Buttons easier to tap (44px high vs 11px)
+- 📱 Auto-scaling padding (clamp)
+- 🔤 Readable text on small phones
+- 📐 Dedicated mobile breakpoints
+- ⌨️  Better keyboard support
+- 💬 Chat optimized for all screen sizes
+
+---
+
+## Live Versions
+
+| Component | Version | Status |
+|-----------|---------|--------|
+| falkor-ui (PWA) | 9.63.0 | ✅ Mobile Optimized |
+| asgard-ai | 6.17.7 | ✅ |
+| falkor-agent | 2.22.0 | ✅ |
+| falkor-workflows | 3.13.0 | ✅ |
+| falkor-brain | 1.0.0 | ✅ |
 
 ---
 
-## Latest Changes
+## User PINs
 
-**Session: 2026-05-16**
-- ✅ Dog UI mascot deployed
-- ✅ User PIN 297 configured for Jacky, George, Aeneas
-- ✅ Vault secrets updated
-- ✅ falkor-agent auth rules updated
-- ✅ All live systems operational
+| User | PIN |
+|------|-----|
+| Paddy | 2967 |
+| Jacky | 297 |
+| George | 297 |
+| Aeneas | 297 |
+| Master | 535554 |
 
 ---
-**All systems ready. 297 for team, 2967 for Paddy, 535554 for master.**
+**All systems operational. Mobile-first design ready.**
 
