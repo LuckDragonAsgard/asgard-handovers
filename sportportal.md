@@ -1,4 +1,4 @@
-# SportPortal — Current State (2026-05-13 verified: 21/21 checks passing ✓)
+# SportPortal — Current State (2026-05-21 verified: 21/21 checks passing ✓)
 
 ## Status: FULLY OPERATIONAL — 21/21 checks passing
 
@@ -74,7 +74,7 @@
 
 ## Workers (key)
 - ssp-portal: all schoolsportportal.com.au routes incl. contact, forgot-password, pricing, billing, Stripe webhook, D1 school page rendering
-- sportcarnival-hub: sportcarnival.com.au — carnival apps, nav banner, API endpoints
+- sportcarnival-hub: sportcarnival.com.au — carnival apps, nav banner, API endpoints. Migrated from Vercel to Cloudflare Workers 2026-05-21, deploys via GitHub Actions with SSP-isolated CLOUDFLARE_API_TOKEN.
 - carnival-results: REST API over D1 (PIN auth for marshals, session auth for admins, race-day reminder cron, forgot-password API)
 - carnival-timing-html: carnivaltiming.com — event index, per-event live results, proper 404 for unknown paths, 301 for known SSP paths
 - district-proxy: district.luckdragon.io → 301 → fixed URL (all paths stripped)
